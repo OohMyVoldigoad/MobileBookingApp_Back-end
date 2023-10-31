@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "SportsCamp",
+    "slug": "SportsCamp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/imp/icon.jpg",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/imp/bg.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/imp/icon.jpg",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/imp/icon.jpg"
+    }
+  }
+}
