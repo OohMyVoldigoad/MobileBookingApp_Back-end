@@ -2,9 +2,11 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 {/* dev */}
-import { COLORS,FONTS } from "../../constans";
+import { COLORS, FONTS, API } from "../../constans";
 
 const Settings = ({ navigation }) => {
   const navigateToEditProfile = () => {
@@ -51,8 +53,28 @@ const Settings = ({ navigation }) => {
     console.log("Aadd account ");
   };
 
-  const logout = () => {
-    console.log("Logout");
+  const logout = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+
+        if (token) {
+            const response = await axios.post(API.Logout, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            await AsyncStorage.removeItem('userToken');
+
+            navigation.navigate('Login')
+
+            return console.log(response.data);
+          }
+
+        throw new Error('Token not found');
+    } catch (error) {
+        console.error('Error during logout:', error);
+    }
   };
 
   const accountItems = [

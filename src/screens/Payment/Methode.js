@@ -6,21 +6,57 @@ import {
     ScrollView,
 } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeftIcon} from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
 
 {/* dev */} 
-import { COLORS, images, Ddigital } from "../../constans";
+import { COLORS, images, Ddigital, TransferBank } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
 
 const MethodePay = (props) => {
+    const select = props.route.params.price;
+    const date = props.route.params.date;
     const price = props.route.params.totalPrice;
     const navigation = useNavigation();
+
+    const [tanggal] = useState(date)
+    const [total] = useState(price)
+    
+    {/* API */}
+    const pemesananHandler = async (title,nomor,image) => {
+        try {
+            const response = await axios.post('http://10.170.8.184:8000/api/pemesanan/1/proses', {
+                id_lapangan: select.map((item)=>{
+                    return item.id_lapangan
+                }),
+                id_jadwal_lapangan: select.map((item)=>{
+                    return item.id
+                }),
+                tanggal_pemesanan: tanggal,
+                total_harga: total
+            });
+            var inibenar = response.data.dataPemesanan
+            console.log(response.data.notifikasi);
+            navigation.navigate('Detail', {
+                select, 
+                price, 
+                title: title, 
+                Nomor: nomor, 
+                image: image,
+                status: "Menunggu Pembayaran",
+                inibenar,
+                tanggal
+            });
+        } catch (error) {
+            console.error('Gagal:', error);
+        }
+    };
 
     return (
         <View className="flex-1">
@@ -73,7 +109,7 @@ const MethodePay = (props) => {
                     >
                         <View className="flex-wrap items-center p-1 py-1 mb-1">
                             <Text style={{fontSize: wp(7)}} className="font-bold mr-4 text-neutral-700">
-                                Metode pembayaran
+                                Metode Pembayaran
                             </Text>
                         </View>
                     </View>
@@ -88,15 +124,22 @@ const MethodePay = (props) => {
                             </Text>
                         </View>
                         {
-                            Ddigital.map((dana, index) => {
+                            Ddigital.map((Ddigital, index) => {
                                 return (
-                                <View key={index} className="flex-row justify-between items-center p-1 py-1 mb-1">
-                                    <TouchableOpacity onPress={() => navigation.navigate('Detail', { price, title: dana.title, Nomor: dana.Nomor, image: dana.image })}>
-                                        <Image source={dana.image} style={{ width: wp(10), height: hp(5), borderRadius: 10 }} />
+                                <View key={index} className="p-1 py-1 mb-1">
+                                    <TouchableOpacity className="flex-row justify-between items-center p-1 py-1 mb-1" 
+                                    onPress={() => {
+                                        pemesananHandler(
+                                            title = Ddigital.title, 
+                                            nomor = Ddigital.Nomor, 
+                                            image = Ddigital.image,
+                                        );
+                                    }}>
+                                        <Image source={Ddigital.image} style={{ width: wp(10), height: hp(5), borderRadius: 10 }} />
+                                        <Text style={{ fontSize: wp(5) }} className="font mr-4 text-neutral-700">
+                                            {Ddigital.title}
+                                        </Text>
                                     </TouchableOpacity>
-                                    <Text style={{ fontSize: wp(5) }} className="font mr-4 text-neutral-700">
-                                        {dana.title}
-                                    </Text>
                                 </View>
                                 );
                             })
@@ -111,30 +154,23 @@ const MethodePay = (props) => {
                                 Transfer Bank
                             </Text>
                         </View>
-                        <View className="flex-row justify-between items-center p-1 py-1 mb-1">
-                            <TouchableOpacity className="mr-4 flex-row justify-between items-center" onPress={()=> navigation.navigate('Detail',)}>
-                                <Image source={require('../../../assets/imp/PayMethode/mandiri.png')} style={{width: wp(10), height: hp(5), borderRadius: 10}} />
-                                <Text style={{fontSize: wp(5)}} className="font mr-4 text-neutral-700">
-                                Mandiri
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View className="flex-row justify-between items-center p-1 py-1 mb-1">
-                            <TouchableOpacity className="mr-4 flex-row justify-between items-center" onPress={()=> navigation.navigate('Detail',)}>
-                                <Image source={require('../../../assets/imp/PayMethode/Bni.jpg')} style={{width: wp(10), height: hp(5), borderRadius: 10}} />
-                                <Text style={{fontSize: wp(5)}} className="font mr-4 text-neutral-700">
-                                Bni
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View className="flex-row justify-between items-center p-1 py-1 mb-1">
-                            <TouchableOpacity className="mr-4 flex-row justify-between items-center" onPress={()=> navigation.navigate('Detail',)}>
-                                <Image source={require('../../../assets/imp/PayMethode/bri.png')} style={{width: wp(10), height: hp(5), borderRadius: 10}} />
-                                <Text style={{fontSize: wp(5)}} className="font mr-4 text-neutral-700">
-                                Bri
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
+                        {
+                            TransferBank.map((Ddigital, index) => {
+                                return (
+                                <View key={index} className="p-1 py-1 mb-1">
+                                    <TouchableOpacity className="flex-row justify-between items-center p-1 py-1 mb-1" 
+                                    onPress={() => {
+                                        pemesananHandler();
+                                    }}>
+                                        <Image source={Ddigital.image} style={{ width: wp(10), height: hp(5), borderRadius: 10 }} />
+                                        <Text style={{ fontSize: wp(5) }} className="font mr-4 text-neutral-700">
+                                            {Ddigital.title}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                );
+                            })
+                        }
                     </View>
                     
                     {/* footer */}

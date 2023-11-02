@@ -5,8 +5,11 @@ export const COLORS = {
     primary: '#BCD8A6',
     secondary: '#3C661C',
     white: '#FFF9E8',
+    pWhite: "#FFF9E8",
     black: '#212121',
+    button: "#3C661C",
     blue: '#027DEF',
+    grey: "#CCCCCC",
 }
 
 export const SIZES = {

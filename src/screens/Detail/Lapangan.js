@@ -18,7 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 
 {/* dev */} 
-import { COLORS,FONTS } from "../../constans";
+import { COLORS, FONTS, API } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -104,12 +104,11 @@ const Lapangan = (props) => {
         setIsModalVisible(false);
     };
     
-
     const [jadwalLapangan, setJadwalLapangan] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://10.170.5.149:8000/api/lapangan/'+home.id+'/jadwal');
+                const response = await axios.get(API.Lapangan+home.id+'/jadwal');
                 setJadwalLapangan(response.data.dataJadwalLapangan);
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengambil data:", error);
@@ -180,7 +179,7 @@ const Lapangan = (props) => {
     return (
         <View className="bg-white flex-1">
             {/* destination image */}
-            <Image source={{ uri:'http://10.170.5.149:8000/storage/'+ home.foto_lapangan }} style={{width: wp(100), height: hp(25)}} />
+            <Image source={{ uri: API.Storage + home.foto_lapangan }} style={{width: wp(100), height: hp(25)}} />
             <StatusBar style={'light'} />
 
             {/* back button */}
@@ -264,8 +263,8 @@ const Lapangan = (props) => {
                                         <TouchableOpacity
                                             key={index}
                                             style={{ width: wp(40), height: wp(30) }}
-                                            className={isButtonSelected || item.status == "telah dipesan" ? "bg-[#D1CBBA] flex justify-end p-1 py-5 space-y-1 mb-10 rounded-3xl items-center" : "bg-[#FFF9E8] flex justify-end p-1 py-5 space-y-1 mb-10 rounded-3xl items-center"}
-                                            disabled = { item.status == "telah dipesan"}
+                                            className={isButtonSelected || item.status == "telah dipesan" || item.status == "tidak tersedia" || item.status == "sedang dipesan" ? "bg-[#D1CBBA] flex justify-end p-1 py-5 space-y-1 mb-10 rounded-3xl items-center" : "bg-[#FFF9E8] flex justify-end p-1 py-5 space-y-1 mb-10 rounded-3xl items-center"}
+                                            disabled = {item.status == "telah dipesan" || item.status == "tidak tersedia" || item.status == "sedang dipesan"}
                                             onPress={() => handleItemPress(item, index)}
                                         >
                                         <Text style={{ fontSize: wp(4) }} className="text-black font-semibold">

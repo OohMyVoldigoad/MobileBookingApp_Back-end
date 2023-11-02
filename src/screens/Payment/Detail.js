@@ -4,42 +4,100 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
-    TextInput
 } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
 
 {/* dev */} 
-import { COLORS, images, imagesDataURL } from "../../constans";
+import { COLORS, images } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
 
 const Detail = (props) => {
-    const { title, Nomor, image, price } = props.route.params;
-    const paycheck = { title, Nomor, image, price }; 
+    const { title, Nomor, image, price, status, inibenar, tanggal } = props.route.params;
+    const paycheck = { title, Nomor, image, price, status, inibenar, tanggal };
     const navigation = useNavigation();
-    const [selectedImage, setSelectedImage] = useState("Upload bukti pembayaran");
+
+    const [minutes, setMinutes] = useState(15);
+    const [seconds, setSeconds] = useState(0);
+    
+    useEffect(() => {
+        let interval = null;
+        
+        if (seconds > 0) {
+            interval = setInterval(() => {
+                setSeconds(seconds - 1);
+            }, 1000);
+        } else if (seconds === 0 && minutes !== 0) {
+            setMinutes(minutes - 1);
+            setSeconds(59);
+        } else if (minutes === 0 && seconds === 0) {
+            // Waktu habis, lakukan aksi berikut
+            // Update status pembayaran
+            updatePaymentStatus();
+            
+            // Navigasi ke halaman 'Methode'
+            navigation.goBack();
+        }
+        
+        return () => clearInterval(interval);
+    }, [minutes, seconds]);
+    
+    const updatePaymentStatus = () => {
+        // Logic untuk mengupdate status pembayaran menjadi "dibatalkan"
+    };
+    
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const handleImageSelection = async () => {
+        // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            aspect: [4, 4],
+            aspect: [9, 16],
             quality: 1,
         });
-
         if (!result.canceled) {
-            setSelectedImage("Belum Upload");
-        } else {
-            alert('You did not select any image.');
+            setSelectedImage(result.assets[0].uri);
         }
     };
+
+    const uploadImage = async () => {
+        const formData = new FormData();
+    
+        // Menambahkan id pemesanan ke form data
+        inibenar.map(item => {
+            return formData.append('id_pemesanan[]', item.id);
+        });
+    
+        // Menambahkan tanggal_pembayaran ke form data
+        formData.append('tanggal_pembayaran', paycheck.tanggal);
+    
+        // Menambahkan gambar ke form data
+        formData.append('bukti_pembayaran', {
+            uri: selectedImage,
+            type: 'image/jpeg', // asumsi gambar adalah jpeg, ubah sesuai kebutuhan
+            name: 'bukti_pembayaran.jpeg'
+        });
+    
+        try {
+            const response = await axios.post('http://10.170.8.184:8000/api/pembayaran/proses', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            console.log(response.data.notifikasi);
+        } catch (error) {
+            console.error('Gagal:', error);
+        }
+    };    
 
         return (
             <View className="flex-1">
@@ -71,9 +129,10 @@ const Detail = (props) => {
                     <Text style={{ fontSize: wp(7) }} className="font-bold text-neutral-700">
                         Detail Pembayaran
                     </Text>
-                    <Text style={{ fontSize: wp(6) }} className="font-bold text-neutral-700">
+                    <Text style={{ fontSize: wp(5) }} className="font-bold text-neutral-700">
                         Rp. {paycheck.price}
                     </Text>
+                    <Text>{`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}</Text>
                 </View>
         
                 <View className="bg-[#BCD8A6] rounded-3xl items-center">
@@ -87,9 +146,7 @@ const Detail = (props) => {
                         </Text>
                     </View>
                     <View className="flex-wrap justify-start items-center p-1 py-1 mb-1">
-                        <Text style={{ fontSize: wp(5) }} className="font mr-4 text-neutral-700">
-                            Keterangan
-                        </Text>
+                        <Text style={{fontSize: wp(4)}} className="text-black font-semibold">{paycheck.status}</Text>
                     </View>
                 </View>
 
@@ -103,20 +160,18 @@ const Detail = (props) => {
                         <TouchableOpacity onPress={handleImageSelection}>
                             <View
                                 style={{
-                                    height: 45,
-                                    width: 350,
-                                    borderRadius: 85,
+                                    height: 200,
+                                    width: 200,
+                                    borderRadius: 1,
                                     borderWidth: 2,
                                     borderColor: COLORS.white,
                                 }}
                             >
-                                <Text style={{ fontSize: wp(4) }} className="font-bold ml-20 mt-2 text-neutral-700">
-                                    {selectedImage}
-                                </Text>
+                                {selectedImage && <Image source={{ uri: selectedImage }} style={{ width: 200, height: 200 }} />}
                             </View>
                         </TouchableOpacity>
                         <View className="flex-row justify-between items-center p-1 py-1 mt-4">
-                            <TouchableOpacity //onPress={()=> navigation.goBack()} 
+                            <TouchableOpacity onPress={uploadImage} 
                             style={{backgroundColor: COLORS.white, height: wp(10), width: wp(40), marginTop: 2, marginBottom: 2}} className="flex justify-center items-center rounded-full">
                                 <Text className="text-black font-bold" style={{fontSize: wp(5.5)}}>Kirim</Text>
                             </TouchableOpacity>

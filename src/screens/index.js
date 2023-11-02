@@ -14,5 +14,8 @@ import Company from "./Detail/Company";
 import ReviewOrder from "./Detail/ReviewOrder";
 import MethodePay from "./Payment/Methode";
 import Detail from "./Payment/Detail";
+import Login from "./Auth/Login"
+import Signup from "./Auth/Signup"
+import OnBoarding from "./Auth/OnBoarding";
 
-export { Feedback, Home, Profile, Promos, Shop, Welcome, EditProfile, Settings, Search, Notifications, CabangOlahraga, Lapangan, Company, ReviewOrder, MethodePay, Detail}
+export { Feedback, Home, Profile, Promos, Shop, Welcome, EditProfile, Settings, Search, Notifications, CabangOlahraga, Lapangan, Company, ReviewOrder, MethodePay, Detail, Login, Signup, OnBoarding}

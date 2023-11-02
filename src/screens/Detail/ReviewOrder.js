@@ -14,7 +14,7 @@ import { ChevronLeftIcon, BanknotesIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
 
 {/* dev */} 
-import { COLORS } from "../../constans";
+import { COLORS, API } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -27,9 +27,9 @@ const ReviewOrder = (props) => {
     const [totalPrice, setTotalPrice] = useState(0);
     useEffect(() => {
         const calculateTotalPrice = () => {
-            const total = price.reduce((acc, item) => acc + item.harga + 2500, 0);
+            const total = price.reduce((acc, item) => acc + item.harga, 0);
             const biayasewa = price.reduce((acc, item) => acc + item.harga, 0);
-            setTotalPrice(total);
+            setTotalPrice(total+2500);
             setBiayaSewa(biayasewa);
         };
     
@@ -40,7 +40,7 @@ const ReviewOrder = (props) => {
     return (
         <View className="bg-white flex-1">
             {/* destination image */}
-            <Image source={{ uri:'http://10.170.5.149:8000/storage/'+ item.foto_lapangan }} style={{width: wp(100), height: hp(25)}} />
+            <Image source={{ uri: API.Storage + item.foto_lapangan }} style={{width: wp(100), height: hp(25)}} />
             <StatusBar style={'light'} />
 
             {/* back button */}
@@ -184,7 +184,7 @@ const ReviewOrder = (props) => {
                         <Text style={{fontSize: wp(5),color: COLORS.white}} className="font-semibold">Total: Rp. {totalPrice} {/* Menampilkan total harga */}</Text>
                     </View>
                 </View>
-                <TouchableOpacity onPress={()=> navigation.navigate('Methode', {...item, totalPrice})} style={{backgroundColor: COLORS.white, height: wp(10), width: wp(50), marginTop: 2, marginBottom: 2}} className="mb-2 mx-3 flex justify-center items-center rounded-full">
+                <TouchableOpacity onPress={()=> navigation.navigate('Methode', {...item, totalPrice, price, date})} style={{backgroundColor: COLORS.white, height: wp(10), width: wp(50), marginTop: 2, marginBottom: 2}} className="mb-2 mx-3 flex justify-center items-center rounded-full">
                     <Text className="text-black font-bold" style={{fontSize: wp(5.5)}}>Pilih pembayaran</Text>
                 </TouchableOpacity>
             </View>

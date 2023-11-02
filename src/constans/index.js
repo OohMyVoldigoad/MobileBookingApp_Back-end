@@ -7,6 +7,15 @@ export const imagesDataURL = [
     'https://i.ibb.co/B4y9pcb/test.jpg'
 ]
 
+export const API = {
+    SignIn : 'http://10.170.8.184:8000/api/login-pelanggan',
+    SignUp : 'http://10.170.8.184:8000/api/register-pelanggan',
+    Home : 'http://10.170.8.184:8000/api/home',
+    Storage : 'http://10.170.8.184:8000/storage/',
+    Lapangan : 'http://10.170.8.184:8000/api/lapangan/',
+    Logout : 'http://10.170.8.184:8000/api/logout-pelanggan'
+}
+
 export const cabangOlahraga = [
     {
         title: 'Badminton',
@@ -204,21 +213,21 @@ export const Ddigital = [
         Nomor : 87654356271,
     }
 ]
-export const Bni = [
+
+export const TransferBank = [
     {
-        title : 'Bni',
-        Nomor : 87654356271,
-    }
-]
-export const Bri = [
+        image : require('../../assets/imp/PayMethode/Bni.jpg'),
+        title: 'Bni',
+        Nomor: 5678345634
+    },
     {
-        title : 'Bri',
-        Nomor : 87654356271,
-    }
-]
-export const Mandiri = [
+        image : require('../../assets/imp/PayMethode/bri.png'),
+        title: 'Bri',
+        Nomor: 123456435
+    },
     {
-        title : 'Mandiri',
-        Nomor : 87654356271,
+        image : require('../../assets/imp/PayMethode/mandiri.png'),
+        title: 'Mandiri',
+        Nomor: 2345676543
     }
 ]

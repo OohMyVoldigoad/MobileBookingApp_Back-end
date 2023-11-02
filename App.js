@@ -1,13 +1,15 @@
 import * as SplashScreen from 'expo-splash-screen'
+import React from 'react'
 import { useFonts } from 'expo-font'
 import { useCallback } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 {/* dev */}
 import BottomTabNavigation from './src/navigation/BottonTabNavigation'
-import { Welcome } from './src/screens'
+import { OnBoarding, Welcome } from './src/screens'
 import { EditProfile } from './src/screens'
 import { Settings } from './src/screens'
 import { Search } from './src/screens'
@@ -18,11 +20,35 @@ import { Company } from './src/screens'
 import { ReviewOrder } from './src/screens'
 import { MethodePay } from './src/screens'
 import { Detail } from './src/screens'
+import { Login } from './src/screens'
+import { Signup } from './src/screens'
 
 const Stack = createNativeStackNavigator()
 
 SplashScreen.preventAutoHideAsync()
+
 export default function App() {
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [userToken, setUserToken] = React.useState(null);
+    // React.useEffect(() => {
+    // // Check the token on app start
+    // const checkToken = async () => {
+    //     let token;
+    //     try {
+    //         token = await AsyncStorage.getItem('userToken');
+    //         setUserToken(token);
+    //     } catch (e) {
+    //         console.error(e);
+    //     }
+    //     // Simulate some startup delay
+    //     setTimeout(() => {
+    //         setIsLoading(false);
+    //     }, 1000);
+    // };
+
+    // checkToken();
+    // }, []);
+
     const [fontsLoaded] = useFonts({
         black: require('./assets/fonts/Poppins-Black.ttf'),
         regular: require('./assets/fonts/Poppins-Regular.ttf'),
@@ -34,7 +60,7 @@ export default function App() {
     })
 
     const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded) {
+        if (fontsLoaded, isLoading) {
             await SplashScreen.hideAsync()
         }
     }, [fontsLoaded])
@@ -44,21 +70,35 @@ export default function App() {
     }
     return (
         <SafeAreaProvider onLayout={onLayoutRootView}>
-            <NavigationContainer>
-                <Stack.Navigator>
-                    {/* Auth */}
-
-                    {/* SplashScreen */}
-                    <Stack.Screen
-                        name="Welcome"
-                        component={Welcome}
-                        options={{
-                            headerShown: false,
-                        }}
-                    />
-
-                    {/* Ekstra */}
-                    <Stack.Screen
+        <NavigationContainer>
+        <Stack.Navigator>
+            {/* { AsyncStorage.getItem('userToken') == null ? ( */}
+            <>
+                <Stack.Screen
+                name="OnBoarding"
+                component={OnBoarding}
+                options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                name="SignUp"
+                component={Signup}
+                options={{ headerShown: false }}
+                />
+            </>
+            {/* ) : (  */}
+            <>
+                <Stack.Screen
+                name="Welcome"
+                component={Welcome}
+                options={{ headerShown: false }}
+                />
+                {/* Your other screens go here */}
+                <Stack.Screen
                         name="EditProfile"
                         component={EditProfile}
                         options={{
@@ -128,17 +168,16 @@ export default function App() {
                             headerShown: false
                         }}
                     />
-
-                    {/* BottomNav */}
-                    <Stack.Screen
-                        name="BottomTabNavigation"
-                        component={BottomTabNavigation}
-                        options={{
-                            headerShown: false,
-                        }}
-                    />
-                </Stack.Navigator>
-            </NavigationContainer>
-        </SafeAreaProvider>
+                {/* ... */}
+                <Stack.Screen
+                name="BottomTabNavigation"
+                component={BottomTabNavigation}
+                options={{ headerShown: false }}
+                />
+            </>
+            {/* )} */}
+        </Stack.Navigator>
+        </NavigationContainer>
+    </SafeAreaProvider>
     )
 }

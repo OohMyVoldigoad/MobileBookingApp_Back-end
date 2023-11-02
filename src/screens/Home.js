@@ -7,27 +7,30 @@ import { LinearGradient } from 'expo-linear-gradient'
 import {Ionicons} from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */}
 import { theme } from '../theme';
-import { cabangOlahraga, Lapangan } from '../constans';
-import { COLORS } from '../constans';
+import { cabangOlahraga } from '../constans';
+import { COLORS, API } from '../constans';
 
 const ios = Platform.OS=='ios';
 const topMargin = ios? 'mt-3': 'mt-2';
 
 
-const Feed = () => {
+const Home = () => {
   const navigation = useNavigation();
   const [Lapangan, setLapangan] = useState([]);
   const [Company, setCompany] = useState([]);
+  const [Nama, setName] =useState("")
 
   useEffect(() => {
       const fetchData = async () => {
           try {
-              const response = await axios.get('http://10.170.5.149:8000/api/home');
+              const response = await axios.get(API.Home);
               setCompany(response.data.dataPenyediaLapangan);
               setLapangan(response.data.dataLapangan);
+              setName(await AsyncStorage.getItem('userNama'))
           } catch (error) {
               console.error("Terjadi kesalahan saat mengambil data:", error);
           }
@@ -45,7 +48,7 @@ const Feed = () => {
                   className="space-y-2 mx-1 mb-4 bg-[#BCD8A6] rounded-3xl p-3 pl-1"
                 >
                   <View className="mx-5 flex-row justify-between items-center mb-10">
-                    <Text style={{ fontSize: wp(6) }} className="font-bold text-neutral-700">Halo, User</Text>
+                    <Text style={{ fontSize: wp(6) }} className="font-bold text-neutral-700">Halo, {Nama}</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
                       <Ionicons
                         name="notifications"
@@ -75,7 +78,7 @@ const Feed = () => {
                   </View>
                     <View className="mx-2 flex-row justify-between items-center">
                       {
-                          cabangOlahraga.map((item, index)=>{
+                          cabangOlahraga && cabangOlahraga.map((item, index) => {
                               return (
                                   <TouchableOpacity key={index} className="flex items-center space-y-2" onPress={()=> navigation.navigate('cabangOlahraga', {...item})}>
                                       <Image source={item.image} className="rounded-3xl" style={{width: wp(25), height: wp(23)}} />
@@ -102,7 +105,7 @@ const Feed = () => {
                     showsHorizontalScrollIndicator={false}
                   >
                     {
-                        Lapangan.map((item,index)=>{
+                        Lapangan && Lapangan.map((item,index) => {
                             return (
                               <TouchableOpacity
                               key={index}
@@ -110,7 +113,7 @@ const Feed = () => {
                               style={{width: wp(44), height: wp(65)}}
                               className="flex justify-end relative p-4 py-6 space-y-2 mb-1">
                                   <Image
-                                      source={{ uri:'http://10.170.5.149:8000/storage/'+ item.foto_lapangan }}
+                                      source={{ uri: API.Storage + item.foto_lapangan }}
                                       style={{width: wp(44), height: wp(65), borderRadius: 35}}
                                       className="absolute"
                                   />
@@ -148,7 +151,7 @@ const Feed = () => {
                     showsHorizontalScrollIndicator={false}
                 >
                     {
-                        Company.map((item, index) => {
+                        Company && Company.map((item, index) => {
                             return (
                                 <TouchableOpacity
                                     key={index}
@@ -157,7 +160,7 @@ const Feed = () => {
                                     className="flex justify-end relative p-4 py-6 space-y-2 mb-1"
                                 >
                                     <Image
-                                        source={{ uri:'http://10.170.5.149:8000/storage/'+ item.foto }}
+                                        source={{ uri: API.Storage + item.foto }}
                                         style={{ width: wp(80), height: wp(65), borderRadius: 35 }}
                                         className="absolute"
                                     />
@@ -189,4 +192,4 @@ const Feed = () => {
       )
 }
 
-export default Feed
+export default Home
