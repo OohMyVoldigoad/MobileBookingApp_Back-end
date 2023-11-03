@@ -15,10 +15,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { ChevronLeftIcon, ShoppingCartIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
-import axios from "axios";
 
 {/* dev */} 
-import { COLORS, FONTS, Api } from "../../constans";
+import { COLORS, FONTS, Api, Storage } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -108,7 +107,7 @@ const Lapangan = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await Api.get(/lapangan/+home.id+'/jadwal');
+                const response = await Api.get('/lapangan/'+home.id+'/jadwal');
                 setJadwalLapangan(response.data.dataJadwalLapangan);
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengambil data:", error);
@@ -179,7 +178,7 @@ const Lapangan = (props) => {
     return (
         <View className="bg-white flex-1">
             {/* destination image */}
-            <Image source={{ uri: `${Api.defaults.baseURL}/storage/${home.foto_lapangan}` }} style={{width: wp(100), height: hp(25)}} />
+            <Image source={{ uri: Storage.Storage + home.foto_lapangan }} style={{width: wp(100), height: hp(25)}} />
             <StatusBar style={'light'} />
 
             {/* back button */}

@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 {/* dev */}
-import { COLORS, FONTS, API } from "../../constans";
+import { COLORS, FONTS, API, Api } from "../../constans";
 
 const Settings = ({ navigation }) => {
   const navigateToEditProfile = () => {
@@ -58,22 +58,23 @@ const Settings = ({ navigation }) => {
       const token = await AsyncStorage.getItem('userToken');
 
         if (token) {
-            const response = await axios.post(API.Logout, {}, {
+            const response = await Api.post('/logout-pelanggan', {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
-            await AsyncStorage.removeItem('userToken');
+            await AsyncStorage.clear();
 
-            navigation.navigate('Login')
+            navigation.navigate('Welcome')
 
             return console.log(response.data);
           }
 
         throw new Error('Token not found');
     } catch (error) {
-        console.error('Error during logout:', error);
+      const token = await AsyncStorage.getItem('userNama');
+        console.error(token);
     }
   };
 

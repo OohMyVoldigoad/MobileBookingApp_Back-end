@@ -4,18 +4,103 @@ import {
   Image,
   TouchableOpacity,
   useWindowDimensions,
+  FlatList
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
+import { SceneMap, TabBar, TabView} from "react-native-tab-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ScrollView } from "react-native";
 
 {/* dev */}
-import { COLORS, FONTS, SIZES, images } from "../constans";
+import { COLORS, FONTS, SIZES, images, Storage } from "../constans";
+
+const FirstRoute = () => (
+  <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+    <FlatList
+      data={images}
+      numColumns={3}
+      renderItem={({ item, index }) => (
+          <View
+          style={{
+              flex: 1,
+              aspectRatio: 1,
+              margin: 3,
+          }}
+          >
+          <Image
+              key={index}
+              source={item}
+              style={{ width: "100%", height: "100%", borderRadius: 12 }}
+          />
+          </View>
+      )}
+    />
+  </View>
+);
+
+const SecondRoute = () => (
+  <View style={{ flex: 1, backgroundColor: COLORS.black }} />
+);
+
+const ThirdRoute = () => (
+  <View style={{ flex: 1, backgroundColor: COLORS.white }} />
+);
+
+const renderScene = SceneMap({
+  first: FirstRoute,
+  second: SecondRoute,
+  third: ThirdRoute
+});
+
+const renderTabBar = (props) => (
+  <TabBar
+  {...props}
+  indicatorStyle={{
+      backgroundColor: COLORS.primary,
+  }}
+  style={{
+      backgroundColor: COLORS.primary,
+      height: 44,
+  }}
+  renderLabel={({ focused, route }) => (
+      <Text style={[{ color: focused ? COLORS.white : COLORS.black }]}>
+        {route.title}
+      </Text>
+  )}
+  />
+);
 
 const Profile = () => {
   const navigation = useNavigation();
+  const layout = useWindowDimensions();
+
+  const [Nama, setName] = useState("")
+  const [image, setImage] = useState("")
+
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: 'first', title: 'Berjalan' },
+    { key: 'second', title: 'Selesai' },
+    { key: 'third', title: 'Gagal' },
+  ]);
+
+  React.useEffect(() => {
+      const fetchData = async () => {
+          try {
+              setName(await AsyncStorage.getItem('userNama'))
+              setImage(await AsyncStorage.getItem('userFoto'))
+          } catch (error) {
+              console.error("Terjadi kesalahan saat mengambil data:", error);
+          }
+      };
+
+      fetchData();
+  }, []);
+
   return (
     <SafeAreaView
       style={{
@@ -37,7 +122,7 @@ const Profile = () => {
 
       <View style={{ flex: 1, alignItems: "center" }}>
         <Image
-          source={images.logo}
+          source={{ uri : Storage.Storage + image }}
           resizeMode="contain"
           style={{
             height: 155,
@@ -56,7 +141,7 @@ const Profile = () => {
             marginVertical: 8,
           }}
         >
-          Users
+          {Nama}
         </Text>
         <Text
           style={{
@@ -130,6 +215,28 @@ const Profile = () => {
             </Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+            style={{
+              width: 124,
+              height: 36,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: COLORS.primary,
+              borderRadius: 10,
+              marginHorizontal: SIZES.padding * 2,
+              marginTop: 10
+            }}
+            onPress={()=> navigation.navigate('Riwayat')}
+          >
+            <Text
+              style={{
+                ...FONTS.body4,
+                color: COLORS.white,
+              }}
+            >
+              Riwayat
+            </Text>
+          </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

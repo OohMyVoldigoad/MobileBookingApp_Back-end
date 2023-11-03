@@ -7,7 +7,7 @@ import Checkbox from "expo-checkbox"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */}
-import { Api } from '../../constans/index';
+import { API, Api } from '../../constans';
 
 const Login = ({ navigation, route }) => {
     const [isPasswordShown, setIsPasswordShown] = useState(true);
@@ -59,6 +59,7 @@ const Login = ({ navigation, route }) => {
         navigation.navigate('BottomTabNavigation', { name: 'Home' })
         } catch (error) {
             setErrorMessage('Username or password is wrong');
+            console.log(error)
         }
     };
 

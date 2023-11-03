@@ -8,13 +8,8 @@ export const imagesDataURL = [
     'https://i.ibb.co/B4y9pcb/test.jpg'
 ]
 
-export const API = {
-    SignIn : 'http://10.170.8.184:8000/api/login-pelanggan',
-    SignUp : 'http://10.170.8.184:8000/api/register-pelanggan',
-    Home : 'http://10.170.8.184:8000/api/home',
-    Storage : 'http://10.170.8.184:8000/storage/',
-    Lapangan : 'http://10.170.8.184:8000/api/lapangan/',
-    Logout : 'http://10.170.8.184:8000/api/logout-pelanggan'
+export const Storage = {
+    Storage : 'http://10.170.8.184:8000/storage/'
 }
 
 export const cabangOlahraga = [
@@ -33,6 +28,8 @@ export const cabangOlahraga = [
 ]
 
 export const sortCategoryData = ['All', 'Belanja', 'Badminton', 'Futsal', 'Mini Soccer'];
+
+export const jenisRiwayat = ['Draft', 'Menuggu' , 'Selesai', 'Gagal']
 
 export const categoriesData = [
     {

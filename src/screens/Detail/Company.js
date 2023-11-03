@@ -14,7 +14,7 @@ import axios from 'axios';
 {/* dev */}
 import { COLORS,FONTS } from '../../constans';
 import DotsView from '../../components/DotsView';
-import { Api } from '../../constans';
+import { Api, Storage } from '../../constans';
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -86,7 +86,7 @@ return (
                                             style={{width: wp(35), height: wp(25), borderRadius: 10}}>
                                             
                                             <ImageBackground 
-                                                source={{ uri: `${Api.defaults.baseURL}/storage/${item.foto_lapangan}` }} 
+                                                source={{ uri: Storage.Storage + item.foto_lapangan }} 
                                                 style={{flex: 1, justifyContent: 'flex-end', borderRadius: 10}}
                                                 imageStyle={{borderRadius: 10}}>
                                                 
@@ -121,7 +121,7 @@ return (
     </Modal>
 
         {/* destination image */}
-        <Image source={{ uri: `${Api.defaults.baseURL}/storage/${item.foto}` }} style={{width: wp(100), height: hp(25)}} />
+        <Image source={{ uri: Storage.Storage + item.foto }} style={{width: wp(100), height: hp(25)}} />
         <StatusBar style={'light'} />
 
         {/* back button */}
@@ -144,7 +144,7 @@ return (
                 <View
                     className="space-y-1 mx-1 mb-4 bg-[#BCD8A6] rounded-3xl p-1 pl-1"
                 >
-                    <Image source={{ uri: `${Api.defaults.baseURL}/storage/${item.foto}` }} style={{width: wp(84), height: hp(25)}} className="flex mx-1 mb-4 bg-[#BCD8A6] rounded-3xl p-1 pl-1"/>
+                    <Image source={{ uri: Storage.Storage + item.foto }} style={{width: wp(84), height: hp(25)}} className="flex mx-1 mb-4 bg-[#BCD8A6] rounded-3xl p-1 pl-1"/>
                     <View
                         style={{
                             alignItems: 'center',

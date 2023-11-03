@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 {/* dev */}
 import { imagesDataURL } from "../../constans/data"; 
@@ -19,11 +20,26 @@ import { COLORS,FONTS,images } from "../../constans";
 
   
 const EditProfile = ({ navigation }) => {
-    const [selectedImage, setSelectedImage] = useState(imagesDataURL[0]);
-    const [name, setName] = useState("Users");
+  React.useEffect(() => {
+    const fetchData = async () => {
+        try {
+            setName(await AsyncStorage.getItem('userNama'))
+            setSelectedImage(await AsyncStorage.getItem('userFoto'))
+            setEmail(await AsyncStorage.getItem('userEmail'))
+            setNohp(await AsyncStorage.getItem('userNoHp'))
+        } catch (error) {
+            console.error("Terjadi kesalahan saat mengambil data:", error);
+        }
+    };
+
+    fetchData();
+}, []);
+
+    const [selectedImage, setSelectedImage] = useState();
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("users@gmail.com");
     const [password, setPassword] = useState("randompassword");
-    const [country, setCountry] = useState("Batam");
+    const [Nohp, setNohp] = useState("");
   
     const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
     const today = new Date();
@@ -157,7 +173,7 @@ const EditProfile = ({ navigation }) => {
           >
             <TouchableOpacity onPress={handleImageSelection}>
               <Image
-                source={ images.logo }
+                source={ selectedImage }
                 style={{
                   height: 170,
                   width: 170,
@@ -298,7 +314,7 @@ const EditProfile = ({ navigation }) => {
               marginBottom: 6,
             }}
           >
-            <Text style={{ ...FONTS.h4 }}>Country</Text>
+            <Text style={{ ...FONTS.h4 }}>Nomor Handphone</Text>
             <View
               style={{
                 height: 44,
@@ -312,8 +328,8 @@ const EditProfile = ({ navigation }) => {
               }}
             >
               <TextInput
-                value={country}
-                onChangeText={(value) => setCountry(value)}
+                value={Nohp}
+                onChangeText={(value) => setNohp(value)}
                 editable={true}
               />
             </View>

@@ -46,12 +46,12 @@ const Welcome = () => {
     }, [])
 
     useEffect(() => {
-        if (progress >= 2) {
-            if ( AsyncStorage.getItem('userToken') != null) {
+        if (progress >= 1) {
+            if ( userToken !== null) {
                 // navigate to the Home Screen
                 navigation.navigate('BottomTabNavigation', { name: 'Home' })
             } else {
-                navigation.navigate('Login')
+                navigation.navigate('OnBoarding')
             }
         }
     }, [progress, navigation, AsyncStorage])

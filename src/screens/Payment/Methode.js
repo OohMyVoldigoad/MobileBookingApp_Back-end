@@ -11,7 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeftIcon} from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
-import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 {/* dev */} 
 import { COLORS, images, Ddigital, TransferBank, Api } from "../../constans";
@@ -24,6 +24,19 @@ const MethodePay = (props) => {
     const date = props.route.params.date;
     const price = props.route.params.totalPrice;
     const navigation = useNavigation();
+    const [Id, setUserID] = useState("")
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setUserID(await AsyncStorage.getItem('idPelanggan'))
+            } catch (error) {
+                console.error("Terjadi kesalahan saat mengambil data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const [tanggal] = useState(date)
     const [total] = useState(price)
@@ -31,7 +44,7 @@ const MethodePay = (props) => {
     {/* API */}
     const pemesananHandler = async (title,nomor,image) => {
         try {
-            const response = await Api.post('/pemesanan/1/proses', {
+            const response = await Api.post('/pemesanan/'+Id+'/proses', {
                 id_lapangan: select.map((item)=>{
                     return item.id_lapangan
                 }),

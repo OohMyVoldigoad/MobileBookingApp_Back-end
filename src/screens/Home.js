@@ -6,13 +6,12 @@ import { MagnifyingGlassIcon } from 'react-native-heroicons/outline'
 import { LinearGradient } from 'expo-linear-gradient'
 import {Ionicons} from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */}
 import { theme } from '../theme';
 import { cabangOlahraga } from '../constans';
-import { COLORS, Api } from '../constans';
+import { COLORS, Api, Storage} from '../constans';
 
 const ios = Platform.OS=='ios';
 const topMargin = ios? 'mt-3': 'mt-2';
@@ -27,7 +26,7 @@ const Home = () => {
   useEffect(() => {
       const fetchData = async () => {
           try {
-              const response = await Api.get('/Home');
+              const response = await Api.get('/home');
               setCompany(response.data.dataPenyediaLapangan);
               setLapangan(response.data.dataLapangan);
               setName(await AsyncStorage.getItem('userNama'))
@@ -113,7 +112,7 @@ const Home = () => {
                               style={{width: wp(44), height: wp(65)}}
                               className="flex justify-end relative p-4 py-6 space-y-2 mb-1">
                                   <Image
-                                      source={{ uri: `${Api.defaults.baseURL}/storage/${item.foto_lapangan}` }}
+                                      source={{ uri: Storage.Storage + item.foto_lapangan }}
                                       style={{width: wp(44), height: wp(65), borderRadius: 35}}
                                       className="absolute"
                                   />
@@ -160,7 +159,7 @@ const Home = () => {
                                     className="flex justify-end relative p-4 py-6 space-y-2 mb-1"
                                 >
                                     <Image
-                                        source={{ uri: `${Api.defaults.baseURL}/storage/${item.foto}` }}
+                                        source={{ uri: Storage.Storage + item.foto }}
                                         style={{ width: wp(80), height: wp(65), borderRadius: 35 }}
                                         className="absolute"
                                     />
