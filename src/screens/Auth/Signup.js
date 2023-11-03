@@ -5,10 +5,9 @@ import { COLORS } from '../../constans/index';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
-import axios from 'axios';
 
 {/* dev */}
-import { API } from '../../constans';
+import { Api } from '../../constans/index';
 
 const Signup = ({ navigation }) => {
     const [isPasswordShown, setIsPasswordShown] = useState(true);
@@ -28,7 +27,7 @@ const Signup = ({ navigation }) => {
     const registerHandler = async () => {
         try {
           // Kirim permintaan login ke server
-        const response = await axios.post(API.SignUp, {
+        const response = await Api.post('/register-pelanggan', {
             nama: name,
             email: email,
             password: password,

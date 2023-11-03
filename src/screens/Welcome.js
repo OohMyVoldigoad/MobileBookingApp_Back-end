@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { StatusBar } from 'expo-status-bar'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 {/* dev */}
 import DotsView from '../components/DotsView'
@@ -12,6 +13,8 @@ const Welcome = () => {
     const [progress, setProgress] = useState(0)
     const navigation = useNavigation()
     
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [userToken, setUserToken] = React.useState(null);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -24,16 +27,34 @@ const Welcome = () => {
                 return prevProgress + 0.1
             })
         }, 1000)
-
+        // Check the token on app start
+        const checkToken = async () => {
+            let token;
+            try {
+                token = await AsyncStorage.getItem('userToken');
+                setUserToken(token);
+            } catch (e) {
+                console.error(e);
+            }
+            // Simulate some startup delay
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 1000);
+        };
+        checkToken();
         return () => clearInterval(intervalId)
     }, [])
 
     useEffect(() => {
-        if (progress >= 1) {
-            // navigate to the Home Screen
-            navigation.navigate('BottomTabNavigation', { name: 'Home' })
+        if (progress >= 2) {
+            if ( AsyncStorage.getItem('userToken') != null) {
+                // navigate to the Home Screen
+                navigation.navigate('BottomTabNavigation', { name: 'Home' })
+            } else {
+                navigation.navigate('Login')
+            }
         }
-    }, [progress, navigation])
+    }, [progress, navigation, AsyncStorage])
 
     return (
         <SafeAreaView style={{ flex: 1 }}>

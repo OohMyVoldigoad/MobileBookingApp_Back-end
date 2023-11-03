@@ -4,11 +4,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from '../../constans/index';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */}
-import { API } from '../../constans';
+import { Api } from '../../constans/index';
 
 const Login = ({ navigation, route }) => {
     const [isPasswordShown, setIsPasswordShown] = useState(true);
@@ -22,7 +21,7 @@ const Login = ({ navigation, route }) => {
     const loginHandler = async () => {
         try {
         // Kirim permintaan login ke server
-        const response = await axios.post(API.SignIn, {
+        const response = await Api.post('/login-pelanggan', {
             email: email,
             password: password,
         });

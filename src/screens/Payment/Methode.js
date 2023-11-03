@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 
 {/* dev */} 
-import { COLORS, images, Ddigital, TransferBank } from "../../constans";
+import { COLORS, images, Ddigital, TransferBank, Api } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -31,7 +31,7 @@ const MethodePay = (props) => {
     {/* API */}
     const pemesananHandler = async (title,nomor,image) => {
         try {
-            const response = await axios.post('http://10.170.8.184:8000/api/pemesanan/1/proses', {
+            const response = await Api.post('/pemesanan/1/proses', {
                 id_lapangan: select.map((item)=>{
                     return item.id_lapangan
                 }),

@@ -14,7 +14,7 @@ import { ChevronLeftIcon, BanknotesIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
 
 {/* dev */} 
-import { COLORS, API } from "../../constans";
+import { COLORS, Api } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -40,7 +40,7 @@ const ReviewOrder = (props) => {
     return (
         <View className="bg-white flex-1">
             {/* destination image */}
-            <Image source={{ uri: API.Storage + item.foto_lapangan }} style={{width: wp(100), height: hp(25)}} />
+            <Image source={{ uri: `${Api.defaults.baseURL}/storage/${item.foto_lapangan}` }} style={{width: wp(100), height: hp(25)}} />
             <StatusBar style={'light'} />
 
             {/* back button */}

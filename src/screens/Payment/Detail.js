@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 
 {/* dev */} 
-import { COLORS, images } from "../../constans";
+import { COLORS, images, Api } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -88,7 +88,7 @@ const Detail = (props) => {
         });
     
         try {
-            const response = await axios.post('http://10.170.8.184:8000/api/pembayaran/proses', formData, {
+            const response = await Api.post('pembayaran/proses', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

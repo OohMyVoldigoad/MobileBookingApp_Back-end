@@ -28,155 +28,127 @@ const Stack = createNativeStackNavigator()
 SplashScreen.preventAutoHideAsync()
 
 export default function App() {
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [userToken, setUserToken] = React.useState(null);
-    // React.useEffect(() => {
-    // // Check the token on app start
-    // const checkToken = async () => {
-    //     let token;
-    //     try {
-    //         token = await AsyncStorage.getItem('userToken');
-    //         setUserToken(token);
-    //     } catch (e) {
-    //         console.error(e);
-    //     }
-    //     // Simulate some startup delay
-    //     setTimeout(() => {
-    //         setIsLoading(false);
-    //     }, 1000);
-    // };
 
-    // checkToken();
-    // }, []);
+const [fontsLoaded] = useFonts({
+    black: require('./assets/fonts/Poppins-Black.ttf'),
+    regular: require('./assets/fonts/Poppins-Regular.ttf'),
+    bold: require('./assets/fonts/Poppins-Bold.ttf'),
+    medium: require('./assets/fonts/Poppins-Medium.ttf'),
+    mediumItalic: require('./assets/fonts/Poppins-MediumItalic.ttf'),
+    semiBold: require('./assets/fonts/Poppins-SemiBold.ttf'),
+    semiBoldItalic: require('./assets/fonts/Poppins-SemiBoldItalic.ttf'),
+})
 
-    const [fontsLoaded] = useFonts({
-        black: require('./assets/fonts/Poppins-Black.ttf'),
-        regular: require('./assets/fonts/Poppins-Regular.ttf'),
-        bold: require('./assets/fonts/Poppins-Bold.ttf'),
-        medium: require('./assets/fonts/Poppins-Medium.ttf'),
-        mediumItalic: require('./assets/fonts/Poppins-MediumItalic.ttf'),
-        semiBold: require('./assets/fonts/Poppins-SemiBold.ttf'),
-        semiBoldItalic: require('./assets/fonts/Poppins-SemiBoldItalic.ttf'),
-    })
-
-    const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded, isLoading) {
-            await SplashScreen.hideAsync()
-        }
-    }, [fontsLoaded])
-
-    if (!fontsLoaded) {
-        return null
+const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+        await SplashScreen.hideAsync()
     }
-    return (
-        <SafeAreaProvider onLayout={onLayoutRootView}>
+}, [fontsLoaded])
+
+if (!fontsLoaded) {
+    return null
+}
+return (
+    <SafeAreaProvider onLayout={onLayoutRootView}>
         <NavigationContainer>
-        <Stack.Navigator>
-            {/* { AsyncStorage.getItem('userToken') == null ? ( */}
-            <>
+            <Stack.Navigator>
                 <Stack.Screen
-                name="OnBoarding"
-                component={OnBoarding}
-                options={{ headerShown: false }}
+                    name="Welcome"
+                    component={Welcome}
+                    options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{ headerShown: false }}
+                    name="OnBoarding"
+                    component={OnBoarding}
+                    options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                name="SignUp"
-                component={Signup}
-                options={{ headerShown: false }}
+                    name="Login"
+                    component={Login}
+                    options={{ headerShown: false }}
                 />
-            </>
-            {/* ) : (  */}
-            <>
                 <Stack.Screen
-                name="Welcome"
-                component={Welcome}
-                options={{ headerShown: false }}
+                    name="SignUp"
+                    component={Signup}
+                    options={{ headerShown: false }}
                 />
                 {/* Your other screens go here */}
                 <Stack.Screen
-                        name="EditProfile"
-                        component={EditProfile}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Settings"
-                        component={Settings}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Search"
-                        component={Search}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Notifications"
-                        component={Notifications}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="cabangOlahraga"
-                        component={CabangOlahraga}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Lapangan"
-                        component={Lapangan}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Company"
-                        component={Company}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="ReviewOrder"
-                        component={ReviewOrder}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Methode"
-                        component={MethodePay}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Detail"
-                        component={Detail}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
-                {/* ... */}
-                <Stack.Screen
-                name="BottomTabNavigation"
-                component={BottomTabNavigation}
-                options={{ headerShown: false }}
+                    name="EditProfile"
+                    component={EditProfile}
+                    options={{
+                        headerShown: false
+                    }}
                 />
-            </>
-            {/* )} */}
-        </Stack.Navigator>
+                <Stack.Screen
+                    name="Settings"
+                    component={Settings}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="Search"
+                    component={Search}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="Notifications"
+                    component={Notifications}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="cabangOlahraga"
+                    component={CabangOlahraga}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="Lapangan"
+                    component={Lapangan}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="Company"
+                    component={Company}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="ReviewOrder"
+                    component={ReviewOrder}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="Methode"
+                    component={MethodePay}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="Detail"
+                    component={Detail}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="BottomTabNavigation"
+                    component={BottomTabNavigation}
+                    options={{ headerShown: false }}
+                />
+            </Stack.Navigator>
         </NavigationContainer>
     </SafeAreaProvider>
     )
