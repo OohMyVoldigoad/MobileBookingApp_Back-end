@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import {Ionicons} from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RenderHtml from 'react-native-render-html';
 
 {/* dev */}
 import { theme } from '../theme';
@@ -151,6 +152,9 @@ const Home = () => {
                 >
                     {
                         Company && Company.map((item, index) => {
+                          const content = {
+                            html: item.deskripsi_lapangan || "" // Pastikan anda mendapatkan string HTML dari deskripsi lapangan
+                          };
                             return (
                                 <TouchableOpacity
                                     key={index}
@@ -171,7 +175,12 @@ const Home = () => {
                                         className="absolute bottom-0"
                                     />
                                     <Text style={{ fontSize: wp(4) }} className="text-white font-semibold">{item.nama_bisnis}</Text>
-                                    <Text style={{ fontSize: wp(2.2) }} className="text-white">{item.deskripsi_lapangan}</Text>
+                                    <View style={{ width: wp(80) }}>
+                                      <RenderHtml
+                                        contentWidth={wp(80)}
+                                        source={content}
+                                      />
+                                    </View>
                                 </TouchableOpacity>
                             )
                         })

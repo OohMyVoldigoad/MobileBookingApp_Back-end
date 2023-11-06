@@ -9,7 +9,7 @@ export const imagesDataURL = [
 ]
 
 export const Storage = {
-    Storage : 'http://10.170.8.184:8000/storage/'
+    Storage : 'http://10.170.2.13:8000/storage/'
 }
 
 export const cabangOlahraga = [

@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import MapView from 'react-native-maps';
 import axios from 'axios';
+import RenderHtml from 'react-native-render-html';
 
 {/* dev */}
 import { COLORS,FONTS } from '../../constans';
@@ -53,6 +54,9 @@ export default function Company(props) {
         fetchData();
     }, [item.id]);
     
+    const content = {
+        html: item.deskripsi_lapangan || "" // Pastikan anda mendapatkan string HTML dari deskripsi lapangan
+    };
 return (
     <View className="bg-white flex-1">
         {/* ModalLapangan */}
@@ -244,9 +248,9 @@ return (
                     
 
                     <View className="justify-between items-baseline ml-1" style={{ marginBottom: 7 }} >
-                        <Text style={{fontSize: wp(4)}} className="text-sans-700">
-                            {item.deskripsi_lapangan}
-                        </Text>
+                        <View style={{ width: wp(80) }}>
+                            <RenderHtml contentWidth={wp(80)} source={content}/>
+                        </View>
                     </View>
                 </View>
 
