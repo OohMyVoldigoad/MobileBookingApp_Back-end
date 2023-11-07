@@ -220,7 +220,7 @@ const Riwayat = (props) => {
         };
   
         fetchData();
-    }, [idPelanggan]);
+    }, [idPelanggan, activeSort]);
 
     const uploadImage = async (id_pemesanan) => {
         const formData = new FormData();
