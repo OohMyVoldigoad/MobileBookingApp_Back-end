@@ -9,7 +9,7 @@ export const imagesDataURL = [
 ]
 
 export const Storage = {
-    Storage : 'http://10.170.2.13:8000/storage/'
+    Storage : 'http://10.170.9.3:8000/storage/'
 }
 
 export const cabangOlahraga = [
@@ -29,7 +29,7 @@ export const cabangOlahraga = [
 
 export const sortCategoryData = ['All', 'Belanja', 'Badminton', 'Futsal', 'Mini Soccer'];
 
-export const jenisRiwayat = ['Draft', 'Menuggu' , 'Selesai', 'Gagal']
+export const jenisRiwayat = ['All', 'draft', 'Menuggu' , 'Selesai', 'Gagal']
 
 export const categoriesData = [
     {

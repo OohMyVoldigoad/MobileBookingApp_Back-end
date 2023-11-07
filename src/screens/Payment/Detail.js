@@ -4,6 +4,8 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
+    StyleSheet,
+    Modal
 } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import React, { useState, useEffect } from "react";
@@ -12,10 +14,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
-import axios from "axios";
+import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 
 {/* dev */} 
-import { COLORS, images, Api } from "../../constans";
+import { FONTS, COLORS, images, Api, Storage } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -27,6 +29,95 @@ const Detail = (props) => {
 
     const [minutes, setMinutes] = useState(15);
     const [seconds, setSeconds] = useState(0);
+
+    const [selectedDay, setSelectedDay] = useState("Day");
+    const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
+    const today = new Date();
+    const startDate = getFormatedDate(
+        today.setDate(today.getDate() + 1),
+        "YYYYY/MM/DD"
+    );
+    const [selectedStartDate, setSelectedStartDate] = useState("Pilih tanggal pembayaran");
+    const [startedDate, setStartedDate] = useState("");
+    const handleChangeStartDate = (propDate) => {
+        setStartedDate(propDate);
+        // Mengambil hari dari tanggal yang dipilih
+        const date = new Date(propDate);
+        const options = { weekday: 'long' };
+        const day = new Intl.DateTimeFormat('id-ID', options).format(date); // Sesuaikan dengan locale yang Anda inginkan
+        setSelectedDay(day);
+    };
+
+    const handleOnPressStartDate = () => {
+        setOpenStartDatePicker(!openStartDatePicker);
+    };
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const openModal = () => {
+        setIsModalVisible(true);
+    };
+    
+    const closeModal = () => {
+        setIsModalVisible(false);
+    };
+    function renderDatePicker() {
+        return (
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={openStartDatePicker}
+            >
+                <View
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+                >
+                <View
+                    style={{
+                    margin: 20,
+                    backgroundColor: COLORS.primary,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 20,
+                    padding: 35,
+                    width: "90%",
+                    shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 5,
+                    }}
+                >
+                    <DatePicker
+                        mode="calendar"
+                        minimumDate={startDate}
+                        selected={startedDate}
+                        onDateChanged={handleChangeStartDate}
+                        onSelectedChange={(date) => setSelectedStartDate(date)}
+                        options={{
+                            backgroundColor: COLORS.primary,
+                            textHeaderColor: "#469ab6",
+                            textDefaultColor: COLORS.white,
+                            selectedTextColor: COLORS.white,
+                            mainColor: "#469ab6",
+                            textSecondaryColor: COLORS.white,
+                            borderColor: "rgba(122,146,165,0.1)",
+                        }}
+                    />
+    
+                    <TouchableOpacity onPress={handleOnPressStartDate}>
+                        <Text style={{ ...FONTS.body3, color: COLORS.white }}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            </Modal>
+        );
+        }
     
     useEffect(() => {
         let interval = null;
@@ -54,8 +145,8 @@ const Detail = (props) => {
         // Logic untuk mengupdate status pembayaran menjadi "dibatalkan"
     };
     
-    const [selectedImage, setSelectedImage] = useState(null);
-
+    const [selectedImage, setSelectedImage] = useState("Upload bukti pembayaran");
+    const [selectedImageName, setSelectedImageName] = useState("Upload bukti pembayaran");
     const handleImageSelection = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -66,6 +157,9 @@ const Detail = (props) => {
         });
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
+            let uriSegments = result.assets[0].uri.split('/');
+            let fileName = uriSegments.pop();
+            setSelectedImageName(fileName);
         }
     };
 
@@ -78,7 +172,7 @@ const Detail = (props) => {
         });
     
         // Menambahkan tanggal_pembayaran ke form data
-        formData.append('tanggal_pembayaran', paycheck.tanggal);
+        formData.append('tanggal_pembayaran', selectedStartDate);
     
         // Menambahkan gambar ke form data
         formData.append('bukti_pembayaran', {
@@ -137,7 +231,7 @@ const Detail = (props) => {
         
                 <View className="bg-[#BCD8A6] rounded-3xl items-center">
                     <View style={{ borderBottomWidth: 2 }} className="flex-wrap items-center ml-2 p-1">
-                        <Image source={paycheck.image} style={{ width: wp(70), height: hp(30), borderRadius: 10, marginTop: 10}} />
+                        <Image source={{ uri: Storage.Storage + paycheck.image }} style={{ width: wp(70), height: hp(30), borderRadius: 10, marginTop: 10}} />
                         <Text style={{ fontSize: wp(5) }} className="font-bold mb-2 text-neutral-700">
                             {paycheck.title}
                         </Text>
@@ -157,23 +251,56 @@ const Detail = (props) => {
                         marginVertical: 22,
                         }}
                     >
-                        <TouchableOpacity onPress={handleImageSelection}>
-                            <View
+                        <View style={styles.timePriceSection1}>
+                            <TouchableOpacity
+                                onPress={handleOnPressStartDate}
                                 style={{
-                                    height: 200,
-                                    width: 200,
-                                    borderRadius: 1,
+                                    height: 50,
+                                    width: 250,
+                                    borderRadius: 9,
                                     borderWidth: 2,
-                                    borderColor: COLORS.white,
+                                    borderColor: COLORS.black,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginBottom: 10
                                 }}
                             >
-                                {selectedImage && <Image source={{ uri: selectedImage }} style={{ width: 200, height: 200 }} />}
-                            </View>
-                        </TouchableOpacity>
-                        <View className="flex-row justify-between items-center p-1 py-1 mt-4">
-                            <TouchableOpacity onPress={uploadImage} 
-                            style={{backgroundColor: COLORS.white, height: wp(10), width: wp(40), marginTop: 2, marginBottom: 2}} className="flex justify-center items-center rounded-full">
-                                <Text className="text-black font-bold" style={{fontSize: wp(5.5)}}>Kirim</Text>
+                                <Text style={styles.time}>{selectedStartDate}</Text>
+                            </TouchableOpacity>
+                                {renderDatePicker()}
+                            <TouchableOpacity
+                                onPress={handleImageSelection}
+                                style={{
+                                    height: 50,
+                                    width: 345,
+                                    borderRadius: 9,
+                                    borderWidth: 2,
+                                    borderColor: COLORS.black,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <Text style={styles.time}>{selectedImageName}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={uploadImage}
+                                style={{
+                                    height: 50,
+                                    width: 70,
+                                    borderRadius: 9,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    paddingBottom: 16,
+                                    paddingVertical: 10,
+                                    borderColor: COLORS.primary,
+                                    borderRadius: 12,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: COLORS.button,
+                                    marginTop: 10
+                                }}
+                            >
+                                <Text style={{color: COLORS.white}}>Kirim</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -191,3 +318,21 @@ const Detail = (props) => {
         };
 
 export default Detail;
+
+const styles = StyleSheet.create({
+    timePriceSection: {
+        padding: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderColor: '#000',
+    },
+    timePriceSection1: {
+        padding: 20,
+        flexDirection: 'wrap',
+        alignItems: 'center',
+        borderColor: '#000',
+    },
+    time: {
+        fontSize: 18,
+    }
+});

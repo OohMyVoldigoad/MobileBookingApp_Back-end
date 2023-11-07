@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 {/* dev */} 
-import { COLORS, images, Ddigital, TransferBank, Api } from "../../constans";
+import { COLORS, images, Ddigital, TransferBank, Api, Storage } from "../../constans";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -24,12 +24,17 @@ const MethodePay = (props) => {
     const date = props.route.params.date;
     const price = props.route.params.totalPrice;
     const navigation = useNavigation();
-    const [Id, setUserID] = useState("")
+    const [Id, setUserID] = useState("");
+    const [metodeDigital, setMetodeDigital] = useState([]);
+    const [metodeBank, setMetodeBank] = useState([]);
 
     React.useEffect(() => {
         const fetchData = async () => {
             try {
+                const response = await Api.get('/metode-pembayaran');
                 setUserID(await AsyncStorage.getItem('idPelanggan'))
+                setMetodeDigital(response.data.dataDigital);
+                setMetodeBank(response.data.dataBank);
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengambil data:", error);
             }
@@ -42,7 +47,7 @@ const MethodePay = (props) => {
     const [total] = useState(price)
     
     {/* API */}
-    const pemesananHandler = async (title,nomor,image) => {
+    const pemesananHandler = async (title,nomor,image,id_metode) => {
         try {
             const response = await Api.post('/pemesanan/'+Id+'/proses', {
                 id_lapangan: select.map((item)=>{
@@ -51,6 +56,7 @@ const MethodePay = (props) => {
                 id_jadwal_lapangan: select.map((item)=>{
                     return item.id
                 }),
+                id_metode_pembayaran : id_metode,
                 tanggal_pemesanan: tanggal,
                 total_harga: total
             });
@@ -137,20 +143,21 @@ const MethodePay = (props) => {
                             </Text>
                         </View>
                         {
-                            Ddigital.map((Ddigital, index) => {
+                            metodeDigital.map((metode, index) => {
                                 return (
-                                <View key={index} className="p-1 py-1 mb-1">
+                                <View key={metode.id} className="p-1 py-1 mb-1">
                                     <TouchableOpacity className="flex-row justify-between items-center p-1 py-1 mb-1" 
                                     onPress={() => {
                                         pemesananHandler(
-                                            title = Ddigital.title, 
-                                            nomor = Ddigital.Nomor, 
-                                            image = Ddigital.image,
+                                            title = metode.nama_metode, 
+                                            nomor = metode.no_rekening, 
+                                            image = metode.foto,
+                                            id_metode = metode.id
                                         );
                                     }}>
-                                        <Image source={Ddigital.image} style={{ width: wp(10), height: hp(5), borderRadius: 10 }} />
+                                        <Image source={{ uri: Storage.Storage + metode.foto }} style={{ width: wp(10), height: hp(5), borderRadius: 10 }} />
                                         <Text style={{ fontSize: wp(5) }} className="font mr-4 text-neutral-700">
-                                            {Ddigital.title}
+                                            {metode.no_rekening}
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
@@ -168,16 +175,21 @@ const MethodePay = (props) => {
                             </Text>
                         </View>
                         {
-                            TransferBank.map((Ddigital, index) => {
+                            metodeBank.map((metode, index) => {
                                 return (
-                                <View key={index} className="p-1 py-1 mb-1">
+                                <View key={metode.id} className="p-1 py-1 mb-1">
                                     <TouchableOpacity className="flex-row justify-between items-center p-1 py-1 mb-1" 
                                     onPress={() => {
-                                        pemesananHandler();
+                                        pemesananHandler(
+                                            title = metode.nama_metode, 
+                                            nomor = metode.no_rekening, 
+                                            image = metode.foto,
+                                            id_metode = metode.id
+                                        );
                                     }}>
-                                        <Image source={Ddigital.image} style={{ width: wp(10), height: hp(5), borderRadius: 10 }} />
+                                        <Image source={{ uri: Storage.Storage + metode.foto }} style={{ width: wp(10), height: hp(5), borderRadius: 10 }} />
                                         <Text style={{ fontSize: wp(5) }} className="font mr-4 text-neutral-700">
-                                            {Ddigital.title}
+                                            {metode.no_rekening}
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
