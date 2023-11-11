@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, ScrollView, Image,  Platform, StyleSheet, ImageBackground } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, TouchableOpacity, ScrollView, Image,  Platform, Modal, ImageBackground } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { MagnifyingGlassIcon } from 'react-native-heroicons/outline'
@@ -7,12 +7,12 @@ import { LinearGradient } from 'expo-linear-gradient'
 import {Ionicons} from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RenderHtml from 'react-native-render-html';
+import { useIsFocused } from '@react-navigation/native';
 
 {/* dev */}
 import { theme } from '../theme';
 import { cabangOlahraga } from '../constans';
-import { COLORS, Api, Storage} from '../constans';
+import { COLORS, Api, Storage, FONTS} from '../constans';
 
 const ios = Platform.OS=='ios';
 const topMargin = ios? 'mt-3': 'mt-2';
@@ -20,9 +20,17 @@ const topMargin = ios? 'mt-3': 'mt-2';
 
 const Home = () => {
   const navigation = useNavigation();
+
   const [Lapangan, setLapangan] = useState([]);
   const [Company, setCompany] = useState([]);
+  const isFocused = useIsFocused();
   const [Nama, setName] =useState("")
+  const animationRef = useRef(null);
+    useEffect(() => {
+        animationRef.current?.play();
+        // Or set a specific startFrame and endFrame with:
+        animationRef.current?.play(30, 120);
+    }, []);
 
   useEffect(() => {
       const fetchData = async () => {
@@ -36,13 +44,14 @@ const Home = () => {
           }
       };
 
-      fetchData();
-  }, []);
+      if (isFocused) {
+        fetchData();
+      }
+  }, [isFocused]);
 
     return (
         <SafeAreaView className="flex-1 bg-[#FFF9E8]">
           <ScrollView showsVerticalScrollIndicator={false} className={"space-y-1 "+topMargin}>
-              
                 {/* avatar */}
                 <ImageBackground
                   className="space-y-2 mx-1 mb-4 bg-[#BCD8A6] rounded-3xl p-3 pl-1"
@@ -81,7 +90,7 @@ const Home = () => {
                           cabangOlahraga && cabangOlahraga.map((item, index) => {
                               return (
                                   <TouchableOpacity key={index} className="flex items-center space-y-2" onPress={()=> navigation.navigate('cabangOlahraga', {...item})}>
-                                      <Image source={item.image} className="rounded-3xl" style={{width: wp(25), height: wp(23)}} />
+                                      <Image source={item.image} style={{width: wp(25), height: wp(23), borderRadius: 100}} />
                                       <Text className="text-neutral-700 font-medium" style={{fontSize: wp(3)}}>{item.title}</Text>
                                   </TouchableOpacity>
                               )
@@ -94,9 +103,9 @@ const Home = () => {
                 <View className="space-y-2 mx-1 mb-4 bg-[#FFF9E8] rounded-3xl p-3 pl-1">
                   <View className="mx-2 flex-row justify-between items-center">
                     <Text style={{fontSize: wp(4)}} className="font-semibold text-neutral-700">Rekomendasi lapangan terdekat</Text>
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity>
                         <Text style={{fontSize: wp(4), color: theme.text}}>Lihat Semua</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                   <ScrollView
                     horizontal
@@ -140,9 +149,9 @@ const Home = () => {
                 <View className="space-y-5 p-3 pl-1">
                   <View className="mx-2 flex-row justify-between items-center">
                     <Text style={{fontSize: wp(4)}} className="font-semibold text-neutral-700">Tempat terdekat</Text>
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity onPress={()=> navigation.navigate('cabangOlahraga', {})}>
                         <Text style={{fontSize: wp(4), color: theme.text}}>Lihat Semua</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                   <ScrollView
                     horizontal
@@ -169,18 +178,13 @@ const Home = () => {
                                     />
                                     <LinearGradient
                                         colors={['transparent', 'rgba(0,0,0,0.8)']}
-                                        style={{ width: wp(80), height: hp(15), borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}
+                                        style={{ width: wp(80), height: hp(20), borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}
                                         start={{ x: 0.5, y: 0 }}
                                         end={{ x: 0.5, y: 1 }}
                                         className="absolute bottom-0"
                                     />
                                     <Text style={{ fontSize: wp(4) }} className="text-white font-semibold">{item.nama_bisnis}</Text>
-                                    <View style={{ width: wp(80) }}>
-                                      <RenderHtml
-                                        contentWidth={wp(80)}
-                                        source={content}
-                                      />
-                                    </View>
+                                    <Text style={{ fontSize: wp(2.5) }} className="text-white font-semibold">{item.alamat}</Text>
                                 </TouchableOpacity>
                             )
                         })

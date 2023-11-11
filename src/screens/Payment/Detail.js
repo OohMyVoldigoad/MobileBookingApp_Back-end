@@ -18,6 +18,7 @@ import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 
 {/* dev */} 
 import { FONTS, COLORS, images, Api, Storage } from "../../constans";
+import LottieView from "lottie-react-native";
 
 const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
@@ -56,10 +57,48 @@ const Detail = (props) => {
     const openModal = () => {
         setIsModalVisible(true);
     };
-    
     const closeModal = () => {
         setIsModalVisible(false);
     };
+    function Success() {
+        return (
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isModalVisible}
+            >
+                <View
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+                >
+                <View
+                    style={{ margin: 20, backgroundColor: COLORS.primary, alignItems: "center", justifyContent: "center", borderRadius: 20, padding: 35, width: "90%", shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 5,
+                    }}
+                >
+                    <LottieView style={{ width: 100, height: 100 }} source={require('../../../assets/imp/success.json')} autoPlay loop/>
+                    <Text style={{ fontSize: wp(4), marginVertical: 15 }} className="font-bold text-neutral-700">
+                        Upload bukti pembayaran berhasil 
+                    </Text>
+
+                    <TouchableOpacity style={{ backgroundColor: COLORS.white, width: wp(20), height: wp(10), justifyContent: "center", alignItems: "center", borderRadius: 10 }} onPress={closeModal}>
+                        <Text style={{ ...FONTS.body2, color: COLORS.black}}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            </Modal>
+        );
+    };
+
     function renderDatePicker() {
         return (
             <Modal
@@ -188,6 +227,7 @@ const Detail = (props) => {
                 },
             });
             console.log(response.data.notifikasi);
+            navigation.navigate('Riwayat');
         } catch (error) {
             console.error('Gagal:', error);
         }
@@ -228,7 +268,7 @@ const Detail = (props) => {
                     </Text>
                     <Text>{`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}</Text>
                 </View>
-        
+                {Success()}
                 <View className="bg-[#BCD8A6] rounded-3xl items-center">
                     <View style={{ borderBottomWidth: 2 }} className="flex-wrap items-center ml-2 p-1">
                         <Image source={{ uri: Storage.Storage + paycheck.image }} style={{ width: wp(70), height: hp(30), borderRadius: 10, marginTop: 10}} />

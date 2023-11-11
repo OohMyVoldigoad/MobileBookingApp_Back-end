@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 {/* dev */}
 import BottomTabNavigation from './src/navigation/BottonTabNavigation'
-import { OnBoarding, Riwayat, Welcome } from './src/screens'
+import { OnBoarding, EditPassword, Welcome } from './src/screens'
 import { EditProfile } from './src/screens'
 import { Settings } from './src/screens'
 import { Search } from './src/screens'
@@ -88,6 +88,13 @@ return (
                     }}
                 />
                 <Stack.Screen
+                    name="EditPassword"
+                    component={EditPassword}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
                     name="Search"
                     component={Search}
                     options={{
@@ -125,13 +132,6 @@ return (
                 <Stack.Screen
                     name="ReviewOrder"
                     component={ReviewOrder}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Riwayat"
-                    component={Riwayat}
                     options={{
                         headerShown: false
                     }}

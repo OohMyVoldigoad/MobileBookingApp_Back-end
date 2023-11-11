@@ -24,6 +24,7 @@
     "expo-linear-gradient": "~12.3.0",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
+    "lottie-react-native": "^6.4.0",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "0.72.6",
@@ -42,6 +43,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-star-rating": "^1.1.0",
     "react-native-svg": "13.9.0",
+    "react-native-sweet-alert": "^3.5.0",
     "react-native-tab-view": "^3.5.2",
     "reanimated": "^0.0.1-alpha"
   },

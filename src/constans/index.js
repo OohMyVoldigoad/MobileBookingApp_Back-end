@@ -9,12 +9,12 @@ export const imagesDataURL = [
 ]
 
 export const Storage = {
-    Storage : 'http://10.170.9.3:8000/storage/'
+    Storage : 'http://10.170.4.99:8000/storage/'
 }
 
 export const cabangOlahraga = [
     {
-        title: 'Badminton',
+        title: 'Bulu Tangkis',
         image: require('../../assets/dummy/badminton.png')
     },
     {
@@ -22,14 +22,14 @@ export const cabangOlahraga = [
         image: require('../../assets/dummy/futsal.png')
     },
     {
-        title: 'Mini-Soccer',
+        title: 'Mini Soccer',
         image: require('../../assets/dummy/mini-soccer.png')
     }
 ]
 
 export const sortCategoryData = ['All', 'Belanja', 'Badminton', 'Futsal', 'Mini Soccer'];
 
-export const jenisRiwayat = ['All', 'draft', 'Menuggu' , 'Selesai', 'Gagal']
+export const jenisRiwayat = ['draft', 'pending' , 'berhasil', 'gagal']
 
 export const categoriesData = [
     {

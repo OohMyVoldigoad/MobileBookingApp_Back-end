@@ -5,60 +5,88 @@ import {
     ScrollView,
     Image,
     TextInput,
-    Modal,
   } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
-import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 {/* dev */}
-import { imagesDataURL } from "../../constans/data"; 
-import { COLORS,FONTS,images } from "../../constans";
+import { COLORS, FONTS, Api, Storage } from "../../constans";
 
   
 const EditProfile = ({ navigation }) => {
-  React.useEffect(() => {
-    const fetchData = async () => {
-        try {
-            setName(await AsyncStorage.getItem('userNama'))
-            setSelectedImage(await AsyncStorage.getItem('userFoto'))
-            setEmail(await AsyncStorage.getItem('userEmail'))
-            setNohp(await AsyncStorage.getItem('userNoHp'))
-        } catch (error) {
-            console.error("Terjadi kesalahan saat mengambil data:", error);
-        }
-    };
+  
+const [selectedImage, setSelectedImage] = useState();
+const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [Oldemail, setOldEmail] = useState("");
+const [Nohp, setNohp] = useState("");
+const [id, setId] = useState("");
+const [errorMessages, setErrorMessages] = useState({});
+  
+React.useEffect(() => {
+  const fetchData = async () => {
+      try {
+          setName(await AsyncStorage.getItem('userNama'))
+          setSelectedImage(await AsyncStorage.getItem('userFoto'))
+          setOldEmail(await AsyncStorage.getItem('userEmail'))
+          setEmail(await AsyncStorage.getItem('userEmail'))
+          setNohp(await AsyncStorage.getItem('userNoHp'))
+          setId(await AsyncStorage.getItem('akunId'))
+      } catch (error) {
+          console.error("Terjadi kesalahan saat mengambil data:", error);
+      }
+  };
 
-    fetchData();
+  fetchData();
 }, []);
 
-    const [selectedImage, setSelectedImage] = useState();
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("users@gmail.com");
-    const [password, setPassword] = useState("randompassword");
-    const [Nohp, setNohp] = useState("");
-  
-    const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
-    const today = new Date();
-    const startDate = getFormatedDate(
-      today.setDate(today.getDate() + 1),
-      "YYYY/MM/DD"
-    );
-    const [selectedStartDate, setSelectedStartDate] = useState("01/01/1990");
-    const [startedDate, setStartedDate] = useState("12/12/2023");
-  
-    const handleChangeStartDate = (propDate) => {
-      setStartedDate(propDate);
-    };
-  
-    const handleOnPressStartDate = () => {
-      setOpenStartDatePicker(!openStartDatePicker);
-    };
-  
-    const handleImageSelection = async () => {
+const editProfile = async () => {
+  const formData = new FormData();
+  formData.append('old_email', Oldemail);
+  formData.append('nama', name);
+  formData.append('email', email);
+  formData.append('no_hp', Nohp);
+  if( selectedImage != null){
+    formData.append('foto', {
+      uri: selectedImage,
+      type: 'image/jpeg', // asumsi gambar adalah jpeg, ubah sesuai kebutuhan
+      name: 'img_profile.jpeg'
+    });
+  }
+
+  try {
+      // Kirim permintaan login ke server
+  const response = await Api.post('/pelanggan/profile/'+ id, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+    },
+  });
+
+    await AsyncStorage.setItem('userEmail', email);
+    await AsyncStorage.setItem('userNama', name);
+    await AsyncStorage.setItem('userNoHp', Nohp);
+    // Jika Anda juga menyimpan foto dalam AsyncStorage, simpan nama file atau path baru ke foto
+    if (selectedImage != null) {
+      await AsyncStorage.setItem('userFoto', selectedImage);
+    }
+  // Handle respons dari server di sini
+  console.log(response.data.notifikasi);
+
+  navigation.navigate('Profile');
+  } catch (error) {
+      // Jika terjadi kesalahan, tangani pesan kesalahan dari server
+      if (error.response && error.response.data && error.response.data.errors) {
+          setErrorMessages(error.response.data.errors);
+      }
+
+      console.error('Ubah profile gagal:', error);
+  }
+};
+
+  const handleImageSelection = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
@@ -66,71 +94,10 @@ const EditProfile = ({ navigation }) => {
         quality: 1,
       });
   
-      console.log(result);
-  
       if (!result.canceled) {
         setSelectedImage(result.assets[0].uri);
       }
     };
-  
-    function renderDatePicker() {
-      return (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={openStartDatePicker}
-        >
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <View
-              style={{
-                margin: 20,
-                backgroundColor: COLORS.primary,
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 20,
-                padding: 35,
-                width: "90%",
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 4,
-                elevation: 5,
-              }}
-            >
-              <DatePicker
-                mode="calendar"
-                minimumDate={startDate}
-                selected={startedDate}
-                onDateChanged={handleChangeStartDate}
-                onSelectedChange={(date) => setSelectedStartDate(date)}
-                options={{
-                  backgroundColor: COLORS.primary,
-                  textHeaderColor: "#469ab6",
-                  textDefaultColor: COLORS.white,
-                  selectedTextColor: COLORS.white,
-                  mainColor: "#469ab6",
-                  textSecondaryColor: COLORS.white,
-                  borderColor: "rgba(122,146,165,0.1)",
-                }}
-              />
-  
-              <TouchableOpacity onPress={handleOnPressStartDate}>
-                <Text style={{ ...FONTS.body3, color: COLORS.white }}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      );
-    }
   
     return (
       <SafeAreaView
@@ -173,7 +140,11 @@ const EditProfile = ({ navigation }) => {
           >
             <TouchableOpacity onPress={handleImageSelection}>
               <Image
-                source={ selectedImage }
+                  source={
+                    selectedImage
+                      ? { uri: Storage.Storage + selectedImage }
+                      : require('../../../assets/dummy/userp.png')
+                  }
                 style={{
                   height: 170,
                   width: 170,
@@ -226,6 +197,11 @@ const EditProfile = ({ navigation }) => {
                   editable={true}
                 />
               </View>
+                {errorMessages.nama && (
+                    <Text style={{ fontSize: 12, color: COLORS.error }}>
+                        {errorMessages.nama[0]}
+                    </Text>
+                )}
             </View>
   
             <View
@@ -252,16 +228,21 @@ const EditProfile = ({ navigation }) => {
                   onChangeText={(value) => setEmail(value)}
                   editable={true}
                 />
-              </View>
             </View>
-  
+                {errorMessages.nama && (
+                    <Text style={{ fontSize: 12, color: COLORS.error }}>
+                        {errorMessages.email[0]}
+                    </Text>
+                )}
+              </View>
+
             <View
               style={{
                 flexDirection: "column",
                 marginBottom: 6,
               }}
             >
-              <Text style={{ ...FONTS.h4 }}>Password</Text>
+              <Text style={{ ...FONTS.h4 }}>Nomor Handphone</Text>
               <View
                 style={{
                   height: 44,
@@ -275,63 +256,17 @@ const EditProfile = ({ navigation }) => {
                 }}
               >
                 <TextInput
-                  value={password}
-                  onChangeText={(value) => setPassword(value)}
+                  value={Nohp}
+                  keyboardType="numeric"
+                  onChangeText={(value) => setNohp(value)}
                   editable={true}
-                  secureTextEntry
                 />
               </View>
-            </View>
-  
-            <View
-              style={{
-                flexDirection: "column",
-                marginBottom: 6,
-              }}
-            >
-              <Text style={{ ...FONTS.h4 }}>Date or Birth</Text>
-              <TouchableOpacity
-                onPress={handleOnPressStartDate}
-                style={{
-                  height: 44,
-                  width: "100%",
-                  borderColor: COLORS.secondaryGray,
-                  borderWidth: 1,
-                  borderRadius: 4,
-                  marginVertical: 6,
-                  justifyContent: "center",
-                  paddingLeft: 8,
-                }}
-              >
-                <Text>{selectedStartDate}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-  
-          <View
-            style={{
-              flexDirection: "column",
-              marginBottom: 6,
-            }}
-          >
-            <Text style={{ ...FONTS.h4 }}>Nomor Handphone</Text>
-            <View
-              style={{
-                height: 44,
-                width: "100%",
-                borderColor: COLORS.secondaryGray,
-                borderWidth: 1,
-                borderRadius: 4,
-                marginVertical: 6,
-                justifyContent: "center",
-                paddingLeft: 8,
-              }}
-            >
-              <TextInput
-                value={Nohp}
-                onChangeText={(value) => setNohp(value)}
-                editable={true}
-              />
+              {errorMessages.nama && (
+                    <Text style={{ fontSize: 12, color: COLORS.error }}>
+                        {errorMessages.no_hp[0]}
+                    </Text>
+                )}
             </View>
           </View>
   
@@ -343,18 +278,17 @@ const EditProfile = ({ navigation }) => {
               alignItems: "center",
               justifyContent: "center",
             }}
+            onPress={editProfile}
           >
             <Text
               style={{
                 ...FONTS.body3,
-                color: COLORS.white,
+                color: COLORS.black,
               }}
             >
               Save Change
             </Text>
           </TouchableOpacity>
-  
-          {renderDatePicker()}
         </ScrollView>
       </SafeAreaView>
     );

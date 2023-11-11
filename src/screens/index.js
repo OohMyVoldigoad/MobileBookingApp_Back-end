@@ -18,5 +18,6 @@ import Login from "./Auth/Login"
 import Signup from "./Auth/Signup"
 import OnBoarding from "./Auth/OnBoarding";
 import Riwayat from "./Detail/Riwayat";
+import EditPassword from "./Profile/EditPassword";
 
-export { Feedback, Home, Profile, Promos, Shop, Welcome, EditProfile, Settings, Search, Notifications, CabangOlahraga, Lapangan, Company, ReviewOrder, MethodePay, Detail, Login, Signup, OnBoarding, Riwayat}
+export { Feedback, Home, Profile, Promos, Shop, Welcome, EditProfile, Settings, Search, Notifications, CabangOlahraga, Lapangan, Company, ReviewOrder, MethodePay, Detail, Login, Signup, OnBoarding, Riwayat, EditPassword}

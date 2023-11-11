@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SceneMap, TabBar, TabView} from "react-native-tab-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
+import { useIsFocused } from '@react-navigation/native';
 
 {/* dev */}
 import { COLORS, FONTS, SIZES, images, Storage } from "../constans";
@@ -76,17 +77,9 @@ const renderTabBar = (props) => (
 
 const Profile = () => {
   const navigation = useNavigation();
-  const layout = useWindowDimensions();
-
+  const isFocused = useIsFocused();
   const [Nama, setName] = useState("")
   const [image, setImage] = useState("")
-
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: 'first', title: 'Berjalan' },
-    { key: 'second', title: 'Selesai' },
-    { key: 'third', title: 'Gagal' },
-  ]);
 
   React.useEffect(() => {
       const fetchData = async () => {
@@ -98,8 +91,10 @@ const Profile = () => {
           }
       };
 
+      if (isFocused) {
       fetchData();
-  }, []);
+    }
+  }, [isFocused]); 
 
   return (
     <SafeAreaView
@@ -122,7 +117,11 @@ const Profile = () => {
 
       <View style={{ flex: 1, alignItems: "center" }}>
         <Image
-          source={{ uri : Storage.Storage + image }}
+            source={
+              image
+                ? { uri: Storage.Storage + image }
+                : require('../../assets/dummy/userp.png')
+            }
           resizeMode="contain"
           style={{
             height: 155,
@@ -215,28 +214,6 @@ const Profile = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-            style={{
-              width: 124,
-              height: 36,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: COLORS.primary,
-              borderRadius: 10,
-              marginHorizontal: SIZES.padding * 2,
-              marginTop: 10
-            }}
-            onPress={()=> navigation.navigate('Riwayat')}
-          >
-            <Text
-              style={{
-                ...FONTS.body4,
-                color: COLORS.white,
-              }}
-            >
-              Riwayat
-            </Text>
-          </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

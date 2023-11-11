@@ -70,7 +70,7 @@ const Signup = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.pWhite }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
         <ScrollView
         showsVerticalScrollIndicator={false}
         style={{paddingHorizontal: 10}}>

@@ -38,6 +38,7 @@ const Login = ({ navigation, route }) => {
         await AsyncStorage.setItem('akunId', response.data.user.id.toString());
 
         await AsyncStorage.setItem('userEmail', response.data.user.email);
+        
         if (response.data.user.email_verified_at) {
             await AsyncStorage.setItem('userEmailVerifiedAt', response.data.user.email_verified_at);
         }
@@ -64,7 +65,7 @@ const Login = ({ navigation, route }) => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.pWhite }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
             <View style={{ flex: 1, marginHorizontal: 22 }}>
                 <View style={{ marginVertical: 22 }}>
                     <Text style={{

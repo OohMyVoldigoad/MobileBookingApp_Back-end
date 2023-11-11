@@ -257,7 +257,7 @@ const Lapangan = (props) => {
                         <View className="flex-row justify-between flex-wrap px-3">
                             {jadwalLapangan.map((item, index) => {
                                 const isButtonSelected = selectedIndexes.includes(index);
-                                if (!isEnabled || item.status !== "telah dipesan") {
+                                if (!isEnabled || item.status !== "telah dipesan" || item.status == "tidak tersedia" || item.status == "sedang dipesan") {
                                     return (
                                         <TouchableOpacity
                                             key={index}

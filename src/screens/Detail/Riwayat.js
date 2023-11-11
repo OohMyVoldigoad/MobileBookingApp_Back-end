@@ -12,13 +12,14 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import React, { useState, useEffect, useRef } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronLeftIcon } from 'react-native-heroicons/outline';
+import LottieView from "lottie-react-native";
 import { useNavigation } from '@react-navigation/native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 {/* dev */} 
 import { FONTS, COLORS, images, jenisRiwayat, Api, Storage } from "../../constans";
@@ -27,7 +28,7 @@ const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const Riwayat = (props) => {
+const Riwayat = () => {
     const navigation = useNavigation();
     const [activeSort, setActiveSort] = useState('draft');
     const [idPelanggan, setidPelanggan] = useState('');
@@ -55,57 +56,57 @@ const Riwayat = (props) => {
         setOpenStartDatePicker(!openStartDatePicker);
     };
 
+    const animationRef = useRef(null);
+    useEffect(() => {
+        animationRef.current?.play();
+        // Or set a specific startFrame and endFrame with:
+        animationRef.current?.play(30, 120);
+    }, []);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const openModal = () => {
         setIsModalVisible(true);
     };
-    
     const closeModal = () => {
         setIsModalVisible(false);
     };
-    function modalSuccess(){
-        return(
+    function Success() {
+        return (
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={isModalVisible}
             >
                 <View
-                    style={{
-                        flex: 1,
-                        alignItems: "center",
-                        justifyContent: "center",
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+                >
+                <View
+                    style={{ margin: 20, backgroundColor: COLORS.primary, alignItems: "center", justifyContent: "center", borderRadius: 20, padding: 35, width: "90%", shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 5,
                     }}
                 >
-                    <View
-                        style={{
-                            margin: 20,
-                            backgroundColor: COLORS.primary,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: 20,
-                            padding: 35,
-                            width: "90%",
-                            shadowColor: "#000",
-                            shadowOffset: {
-                                width: 0,
-                                height: 2,
-                            },
-                            shadowOpacity: 0.25,
-                            shadowRadius: 4,
-                            elevation: 5,
-                        }}
-                    >
-                        <Text style={{ ...FONTS.body3, color: COLORS.white }}>Upload Bukti Pembayaran Berhasil</Text>
-                            
-                        <TouchableOpacity onPress={closeModal} style={{ alignItems: "center", width: wp(20), height: wp(10), color: COLORS.white,backgroundColor: COLORS.black, borderRadius: 5 }}>
-                            <Text style={{ fontSize: wp(5), marginTop: 5,color: COLORS.white,}}>Tutup</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <LottieView ref={animationRef} style={{ width: 100, height: 100 }} source={require('../../../assets/imp/success.json')}/>
+                    <Text style={{ fontSize: wp(4), marginVertical: 15 }} className="font-bold text-neutral-700">
+                        Upload bukti pembayaran berhasil 
+                    </Text>
+
+                    <TouchableOpacity style={{ backgroundColor: COLORS.white, width: wp(20), height: wp(10), justifyContent: "center", alignItems: "center", borderRadius: 10 }} onPress={closeModal}>
+                        <Text style={{ ...FONTS.body2, color: COLORS.black}}>Close</Text>
+                    </TouchableOpacity>
                 </View>
+            </View>
             </Modal>
-        )
-    }
+        );
+    };
 
     function renderDatePicker() {
         return (
@@ -164,7 +165,22 @@ const Riwayat = (props) => {
             </View>
             </Modal>
         );
-        }
+    };
+
+    const getStatusStyle = (status) => {
+    switch (status) {
+        case 'draft':
+        return { color: 'blue', fontSize: 18, fontWeight: 'bold' };
+        case 'pending':
+        return { color: '#f2dd3d', fontSize: 18, fontWeight: 'bold' };
+        case 'berhasil':
+        return { color: 'green', fontSize: 18, fontWeight: 'bold' };
+        case 'gagal':
+        return { color: 'red', fontSize: 18, fontWeight: 'bold' };
+        default:
+        return { fontSize: 18, fontWeight: 'bold' };
+    }
+    };
 
     const [selectedItem, setSelectedItem] = useState([]);
 
@@ -215,12 +231,11 @@ const Riwayat = (props) => {
                 }
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengambil data:", error);
-                console.error("Terjadi kesalahan saat mengambil data:", activeSort);
             }
         };
   
         fetchData();
-    }, [idPelanggan]);
+    }, [idPelanggan, activeSort]);
 
     const uploadImage = async (id_pemesanan) => {
         const formData = new FormData();
@@ -242,8 +257,8 @@ const Riwayat = (props) => {
                 },
             });
             console.log(response.data.notifikasi);
+            bottomSheetModalRef.current?.close()
             openModal()
-            bottomSheetModalRef.current?.close();
         } catch (error) {
             console.error('Gagal:', error);
         }
@@ -259,15 +274,8 @@ const Riwayat = (props) => {
                 
                     {/* back button */}
                     <SafeAreaView className={"flex-row justify-between items-center w-full absolute " + topMargin}>
-                        <TouchableOpacity
-                            onPress={() => navigation.goBack()}
-                            className="p-2 rounded-full ml-4"
-                            style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
-                        >
-                            <ChevronLeftIcon size={wp(7)} strokeWidth={4} color="white" />
-                        </TouchableOpacity>
+                            <Image className="flex-row justify-end w-full absolute" source={images.logo_w} style={{ width: wp(20), height: hp(10) }} />
                         <View className="flex-row justify-end w-full absolute">
-                            <Image source={images.logo_w} style={{ width: wp(20), height: hp(10) }} />
                             <Text style={{ fontSize: wp(7) }} className="font-bold mr-4 text-neutral-700">
                                 Sports Camp
                             </Text>
@@ -281,7 +289,24 @@ const Riwayat = (props) => {
                             <Text style={{ fontSize: wp(5), marginVertical: 7 }} className="font-bold text-neutral-700">
                                 Info Lapangan Yang Dipesan 
                             </Text>
+                            {activeSort == "draft" ? (
+                                <View style={{ borderRadius: 10 }} className="bg-[#BCD8A6] mx-6 flex-row">
+                                    <FontAwesome5
+                                        name="info-circle"
+                                        size={24}
+                                        style={{ fontSize: wp(5), marginVertical: 7, marginEnd: 5, color: "yellow" }}
+                                        className="mt-2"
+                                    />  
+                                    <Text style={{ fontSize: wp(3), marginVertical: 5 }} className="font-bold text-neutral-700">
+                                    Pemesanan yang belum dilunasi akan otomatis dibatalkan dalam waktu 5 menit. 
+                                    </Text>
+                                </View>
+                            ):(
+                                <Text>-</Text>
+                            )}
                         </View>
+                        
+                        {Success()}
                         <View style={{ borderRadius: 10 }} className="bg-[#BCD8A6]">
                             <View className="flex-row justify-around items-center mx-1 rounded-full p-2 px-4 space-x-2" style={{ borderBottomColor: "white" }}>
                                 {
@@ -300,7 +325,7 @@ const Riwayat = (props) => {
                                 <View className="flex-row items-center mx-1 rounded-full p-2 px-4 space-x-2" key={index}>
                                     <TouchableOpacity
                                         style={{ width: wp(80), height: wp(35) }}
-                                        className={"bg-[#FFF9E8] flex justify-end p-1 py-5 space-y-1 mb-10 rounded-3xl"}
+                                        className={"bg-[#FFF9E8] flex-row p-1 py-5 space-y-1 mb-10 rounded-3xl"}
                                         onPress={() => handlePresentModal(itemsArray)}
                                     >
                                         {itemsArray.length > 1 ? (
@@ -347,7 +372,6 @@ const Riwayat = (props) => {
                                     </TouchableOpacity>
                                 </View>
                             ))}
-                            {modalSuccess()}
                         </View>
                         {/* footer */}
                         <View className="space-y-20">
@@ -378,7 +402,7 @@ const Riwayat = (props) => {
                                         <Text style={styles.headerText}>DETAIL PESANAN</Text>
                                     </View>
                                     <View style={styles.sectionTanggal}>
-                                        <Text style={styles.tanggal}>{selectedItem[0].created_at}</Text>
+                                        <Text style={styles.tanggal}>{selectedItem[0].tanggal_pemesanan}</Text>
                                     </View>
 
                                     <View style={styles.section}>
@@ -388,7 +412,7 @@ const Riwayat = (props) => {
 
                                     <View style={styles.section}>
                                         <Text style={styles.sectionTitle}>Status Pemesanan</Text>
-                                        <Text style={styles.status}>{selectedItem[0].status}</Text>
+                                        <Text style={getStatusStyle(selectedItem[0].status)}>{selectedItem[0].status}</Text>
                                     </View>
 
                                     <View style={styles.section}>
@@ -409,6 +433,10 @@ const Riwayat = (props) => {
                                         ))
                                     }
 
+                                    <View style={styles.header2}>
+                                        <Text style={styles.headerText2}>Metode Pembayaran</Text>
+                                    </View>
+
                                     <View style={styles.timePriceSection2}>
                                         <View className="flex-row">
                                         <Image source={{ uri: Storage.Storage + selectedItem[0].metode_pembayaran.foto }} style={{ width: wp(15), height: hp(5), borderRadius: 10, borderColor: COLORS.black  }} />
@@ -417,8 +445,15 @@ const Riwayat = (props) => {
                                         <Text style={styles.price} className="ml-2 mt-2">{selectedItem[0].metode_pembayaran.no_rekening}</Text>
                                     </View>
 
-                                    <View style={styles.timePriceSection1}>
-                                        <TouchableOpacity
+                                    {selectedItem[0].status != 'draft' ? (
+                                        <View style={styles.commentSection}>
+                                            <Text style={styles.commentTitle}>Komentar</Text>
+                                            <Text style={styles.comment}>{selectedItem[0].komentar ?? ('-') }</Text>
+                                            <Text style={styles.admin}>{selectedItem[0].komentar ?? ('-') }</Text>
+                                        </View>
+                                    ):(
+                                        <View style={styles.timePriceSection1}>
+                                            <TouchableOpacity
                                                 onPress={handleOnPressStartDate}
                                                 style={{
                                                     height: 50,
@@ -474,12 +509,18 @@ const Riwayat = (props) => {
                                             >
                                                 <Text style={{color: COLORS.white}}>Kirim</Text>
                                             </TouchableOpacity>
+                                        </View>
+                                    )}
 
                                     <View style={styles.footer}>
                                         <Text style={styles.footerText}>SPORTSCAMP</Text>
                                     </View>
-                            </View>
-
+                                    {/* footer */}
+                                    <View className="space-y-20">
+                                        <View className="mx-25 items-center">
+                                        <Text style={{ fontSize: wp(1), color: COLORS.white }} className="font-semibold">Akhir halaman</Text>
+                                        </View>
+                                    </View>
                                 </BottomSheetScrollView>
                             </View>
                             : selectedItem.map((item, index) => (
@@ -489,7 +530,7 @@ const Riwayat = (props) => {
                                             <Text style={styles.headerText}>DETAIL PESANAN</Text>
                                         </View>
                                         <View style={styles.sectionTanggal}>
-                                            <Text style={styles.tanggal}>{item.created_at}</Text>
+                                            <Text style={styles.tanggal}>{item.tanggal_pemesanan}</Text>
                                         </View>
 
                                         <View style={styles.section}>
@@ -499,7 +540,7 @@ const Riwayat = (props) => {
 
                                         <View style={styles.section}>
                                             <Text style={styles.sectionTitle}>Status Pemesanan</Text>
-                                            <Text style={styles.status}>{item.status}</Text>
+                                            <Text style={getStatusStyle(item.status)}>{item.status}</Text>
                                         </View>
 
                                         <View style={styles.section}>
@@ -523,63 +564,76 @@ const Riwayat = (props) => {
                                             <Text style={styles.price} className="ml-2 mt-2">{item.metode_pembayaran.no_rekening}</Text>
                                         </View>
 
-                                        <View style={styles.timePriceSection1}>
-                                        <TouchableOpacity
-                                                onPress={handleOnPressStartDate}
-                                                style={{
-                                                    height: 50,
-                                                    width: 345,
-                                                    borderRadius: 9,
-                                                    borderColor: COLORS.black,
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    marginBottom: 10
-                                                }}
-                                            >
-                                                <Text style={styles.time}>{selectedStartDate}</Text>
-                                            </TouchableOpacity>
-                                                {renderDatePicker()}
+                                        {item.status != 'draft' ? (
+                                            <View style={styles.commentSection}>
+                                                <Text style={styles.commentTitle}>Komentar</Text>
+                                                <Text style={styles.comment}>{item.komentar ?? ('-') }</Text>
+                                                <Text style={styles.admin}>{item.komentar ?? ('-') }</Text>
+                                            </View>
+                                        ):(
+                                            <View style={styles.timePriceSection1}>
                                             <TouchableOpacity
-                                                onPress={handleImageSelection}
-                                                style={{
-                                                    height: 50,
-                                                    width: 345,
-                                                    borderRadius: 9,
-                                                    borderWidth: 2,
-                                                    borderColor: COLORS.black,
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                }}
-                                            >
-                                                <Text style={styles.time}>{selectedImageName}</Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => uploadImage(item.id)}
-                                                style={{
-                                                    height: 50,
-                                                    width: 70,
-                                                    borderRadius: 9,
-                                                    borderWidth: 2,
-                                                    borderColor: COLORS.black,
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    paddingBottom: 16,
-                                                    paddingVertical: 10,
-                                                    borderColor: COLORS.primary,
-                                                    borderWidth: 2,
-                                                    borderRadius: 12,
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    backgroundColor: COLORS.button,
-                                                    marginTop: 10
-                                                }}
-                                            >
-                                                <Text style={{color: COLORS.white}}>Kirim</Text>
-                                            </TouchableOpacity>
-                                        </View>
-
+                                                    onPress={handleOnPressStartDate}
+                                                    style={{
+                                                        height: 50,
+                                                        width: 345,
+                                                        borderRadius: 9,
+                                                        borderColor: COLORS.black,
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        marginBottom: 10
+                                                    }}
+                                                >
+                                                    <Text style={styles.time}>{selectedStartDate}</Text>
+                                                </TouchableOpacity>
+                                                    {renderDatePicker()}
+                                                <TouchableOpacity
+                                                    onPress={handleImageSelection}
+                                                    style={{
+                                                        height: 50,
+                                                        width: 345,
+                                                        borderRadius: 9,
+                                                        borderWidth: 2,
+                                                        borderColor: COLORS.black,
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                    }}
+                                                >
+                                                    <Text style={styles.time}>{selectedImageName}</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    onPress={() => uploadImage(item.id)}
+                                                    style={{
+                                                        height: 50,
+                                                        width: 70,
+                                                        borderRadius: 9,
+                                                        borderWidth: 2,
+                                                        borderColor: COLORS.black,
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        paddingBottom: 16,
+                                                        paddingVertical: 10,
+                                                        borderColor: COLORS.primary,
+                                                        borderWidth: 2,
+                                                        borderRadius: 12,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        backgroundColor: COLORS.button,
+                                                        marginTop: 10
+                                                    }}
+                                                >
+                                                    <Text style={{color: COLORS.white}}>Kirim</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
                                         <View style={styles.footer}>
                                             <Text style={styles.footerText}>SPORTSCAMP</Text>
+                                        </View>
+                                        {/* footer */}
+                                        <View className="space-y-20">
+                                            <View className="mx-25 items-center">
+                                            <Text style={{ fontSize: wp(1), color: COLORS.white }} className="font-semibold">Akhir halaman</Text>
+                                            </View>
                                         </View>
                                     </BottomSheetScrollView>
                                 </View>
@@ -662,11 +716,6 @@ sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
 },
-status: {
-    color: 'green',
-    fontSize: 18,
-    fontWeight: 'bold',
-},
 JenisLapanganText: {
     fontSize: 18,
 },
@@ -688,6 +737,7 @@ timePriceSection2: {
     padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderBottomWidth: 1,
     borderColor: '#000',
 },
 time: {

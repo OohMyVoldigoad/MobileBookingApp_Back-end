@@ -3,7 +3,7 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import { CommonActions } from "@react-navigation/native";
 
 {/* dev */}
 import { COLORS, FONTS, API, Api } from "../../constans";
@@ -22,7 +22,7 @@ const Settings = ({ navigation }) => {
   };
 
   const navigateToPrivacy = () => {
-    console.log("Privacy function");
+    navigation.navigate("EditPassword");
   };
 
   const navigateToSubscription = () => {
@@ -53,6 +53,10 @@ const Settings = ({ navigation }) => {
     console.log("Aadd account ");
   };
 
+  const resetAction = CommonActions.reset({
+    index: 0,
+    routes: [{ name: 'Welcome' }],
+  });
   const logout = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
@@ -66,15 +70,14 @@ const Settings = ({ navigation }) => {
 
             await AsyncStorage.clear();
 
-            navigation.navigate('Welcome')
+            navigation.dispatch(resetAction);
 
             return console.log(response.data);
           }
 
         throw new Error('Token not found');
     } catch (error) {
-      const token = await AsyncStorage.getItem('userNama');
-        console.error(token);
+        console.error(error);
     }
   };
 

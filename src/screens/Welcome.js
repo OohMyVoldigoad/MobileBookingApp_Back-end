@@ -54,11 +54,11 @@ const Welcome = () => {
                 navigation.navigate('OnBoarding')
             }
         }
-    }, [progress, navigation, AsyncStorage])
+    }, [progress, navigation, AsyncStorage, userToken])
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <StatusBar style={'light'} />
+            <StatusBar style={'auto'} />
             <ImageBackground
                 source={images.bg}
                 style={{ flex: 10 }}

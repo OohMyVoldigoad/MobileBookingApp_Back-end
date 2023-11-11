@@ -10,7 +10,7 @@ const OnBoarding = ({ navigation }) => {
             style={{
                 flex: 1
             }}
-            colors={[COLORS.pWhite, COLORS.white]}
+            colors={[COLORS.primary, COLORS.white]}
         >
             <View style={{ flex: 1 }}>
                 <View>

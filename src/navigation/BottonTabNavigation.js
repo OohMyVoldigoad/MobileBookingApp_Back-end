@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 {/* dev */}
 import { COLORS, FONTS, images } from "../constans";
-import { Feedback, Home, Profile, Promos, Shop } from "../screens";
+import { Feedback, Home, Profile, Promos, Riwayat } from "../screens";
 
 const Tab = createBottomTabNavigator()
 
@@ -141,8 +141,8 @@ const BottomTabNavigation = () => {
                 }}
             />
             <Tab.Screen
-                name="Shop"
-                component={Shop}
+                name="Riwayat"
+                component={Riwayat}
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
@@ -155,7 +155,7 @@ const BottomTabNavigation = () => {
                                 {focused ? (
                                     <>
                                     <Ionicons
-                                        name="cart"
+                                        name="time"
                                         size={24}
                                         color={focused ? COLORS.white : COLORS.black}
                                     />
@@ -165,12 +165,12 @@ const BottomTabNavigation = () => {
                                                 color: COLORS.white,
                                             }}
                                         >
-                                            Shop
+                                            Riwayat
                                         </Text>
                                     </>
                                 ) : (
                                     <Ionicons
-                                        name="cart-outline"
+                                        name="time-outline"
                                         size={24}
                                         color={focused ? COLORS.primary : COLORS.black}
                                     />
