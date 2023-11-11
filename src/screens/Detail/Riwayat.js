@@ -20,6 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */} 
 import { FONTS, COLORS, images, jenisRiwayat, Api, Storage } from "../../constans";
@@ -28,7 +29,12 @@ const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const Riwayat = () => {
+const Riwayat = (props) => {
+    const paycheck = {
+        prosesBerhasil: props.route.params?.prosesBerhasil || false,
+        type: props.route.params?.type || '',
+        notifikasi: props.route.params?.notifikasi || '',
+    };
     const navigation = useNavigation();
     const [activeSort, setActiveSort] = useState('draft');
     const [idPelanggan, setidPelanggan] = useState('');
@@ -56,57 +62,19 @@ const Riwayat = () => {
         setOpenStartDatePicker(!openStartDatePicker);
     };
 
-    const animationRef = useRef(null);
     useEffect(() => {
-        animationRef.current?.play();
-        // Or set a specific startFrame and endFrame with:
-        animationRef.current?.play(30, 120);
-    }, []);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const openModal = () => {
-        setIsModalVisible(true);
-    };
-    const closeModal = () => {
-        setIsModalVisible(false);
-    };
-    function Success() {
-        return (
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={isModalVisible}
-            >
-                <View
-                style={{
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-                >
-                <View
-                    style={{ margin: 20, backgroundColor: COLORS.primary, alignItems: "center", justifyContent: "center", borderRadius: 20, padding: 35, width: "90%", shadowColor: "#000",
-                    shadowOffset: {
-                        width: 0,
-                        height: 2,
-                    },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 4,
-                    elevation: 5,
-                    }}
-                >
-                    <LottieView ref={animationRef} style={{ width: 100, height: 100 }} source={require('../../../assets/imp/success.json')}/>
-                    <Text style={{ fontSize: wp(4), marginVertical: 15 }} className="font-bold text-neutral-700">
-                        Upload bukti pembayaran berhasil 
-                    </Text>
-
-                    <TouchableOpacity style={{ backgroundColor: COLORS.white, width: wp(20), height: wp(10), justifyContent: "center", alignItems: "center", borderRadius: 10 }} onPress={closeModal}>
-                        <Text style={{ ...FONTS.body2, color: COLORS.black}}>Close</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            </Modal>
-        );
-    };
+        if (paycheck?.prosesBerhasil) {
+            const alertType = paycheck.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.SUCCESS;
+            Toast.show({
+                type: type,
+                title: paycheck.type,
+                textBody: paycheck.notifikasi,
+                autoClose: 1500,
+            })
+            navigation.setParams({ prosesBerhasil: false });
+        }
+    }, [paycheck?.prosesBerhasil]);
 
     function renderDatePicker() {
         return (
@@ -258,8 +226,26 @@ const Riwayat = () => {
             });
             console.log(response.data.notifikasi);
             bottomSheetModalRef.current?.close()
-            openModal()
+
+            const alertType = response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.SUCCESS;
+            Toast.show({
+                type: type,
+                title: response.data.type,
+                textBody: response.data.notifikasi,
+                autoClose: 1500,
+            })    
+
         } catch (error) {
+            const alertType = error.response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
+
+            Toast.show({
+                type: type,
+                title: error.response.data.type,
+                textBody: error.response.data.notifikasi,
+                autoClose: 1500,
+            });
             console.error('Gagal:', error);
         }
     };
@@ -298,7 +284,7 @@ const Riwayat = () => {
                                         className="mt-2"
                                     />  
                                     <Text style={{ fontSize: wp(3), marginVertical: 5 }} className="font-bold text-neutral-700">
-                                    Pemesanan yang belum dilunasi akan otomatis dibatalkan dalam waktu 5 menit. 
+                                    Pemesanan yang belum dilunasi akan otomatis dibatalkan dalam waktu 10 menit. 
                                     </Text>
                                 </View>
                             ):(
@@ -306,7 +292,6 @@ const Riwayat = () => {
                             )}
                         </View>
                         
-                        {Success()}
                         <View style={{ borderRadius: 10 }} className="bg-[#BCD8A6]">
                             <View className="flex-row justify-around items-center mx-1 rounded-full p-2 px-4 space-x-2" style={{ borderBottomColor: "white" }}>
                                 {

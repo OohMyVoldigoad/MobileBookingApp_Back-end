@@ -6,8 +6,8 @@ import { COLORS } from '../constans';
 export default function App() {
   return (
     <View style={styles.container}>
-      <LottieView style={{ width: 100, height: 100 }} source={require('../../assets/imp/setting.json')} autoPlay loop/>
-      <Text>Mohon maaf fitur ini sedang dalam pengerjaan.</Text>
+      <LottieView style={{ width: 150, height:150 }} source={require('../../assets/imp/setting.json')} autoPlay loop/>
+      <Text style={{ fontSize: 16 }}>Mohon maaf fitur ini sedang dalam pengerjaan.</Text>
       <StatusBar style="auto" />
     </View>
   );

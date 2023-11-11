@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */}
 import { COLORS, FONTS, Api } from "../../constans";
@@ -50,13 +51,30 @@ const editPassword = async () => {
                 }
             })
             console.log(response.data.notifikasi);
-        }// Handle respons dari server di sini
+
+            navigation.navigate('Profile',{
+                //notifikasi
+                prosesBerhasil:true,
+                notifikasi: response.data.notifikasi,
+                type: response.data.type
+            });
+        }
 
     } catch (error) {
         // Jika terjadi kesalahan, tangani pesan kesalahan dari server
         if (error.response && error.response.data && error.response.data.errors) {
             setErrorMessages(error.response.data.errors);
         }
+
+        const alertType = error.response.data.type.toUpperCase();
+        const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
+
+        Toast.show({
+            type: type,
+            title: error.response.data.type,
+            textBody: error.response.data.notifikasi,
+            autoClose: 1500,
+        });
 
         console.error('Register gagal:', errorMessages);
     }

@@ -5,11 +5,18 @@ import { COLORS } from '../../constans/index';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */}
 import { API, Api } from '../../constans';
 
 const Login = ({ navigation, route }) => {
+    const paycheck = {
+        prosesBerhasil: route.params?.prosesBerhasil || false,
+        type: route.params?.type || '',
+        notifikasi: route.params?.notifikasi || '',
+    };
+
     const [isPasswordShown, setIsPasswordShown] = useState(true);
     const [isChecked, setIsChecked] = useState(false);
     
@@ -18,47 +25,80 @@ const Login = ({ navigation, route }) => {
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
 
+    useEffect(() => {
+        if (paycheck?.prosesBerhasil) {
+            const alertType = paycheck.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.SUCCESS;
+            Toast.show({
+                type: type,
+                title: paycheck.type,
+                textBody: paycheck.notifikasi,
+                autoClose: 1500,
+            })
+            navigation.setParams({ prosesBerhasil: false });
+        }
+    }, [paycheck?.prosesBerhasil]);
+
     const loginHandler = async () => {
         try {
-        // Kirim permintaan login ke server
-        const response = await Api.post('/login-pelanggan', {
-            email: email,
-            password: password,
-        });
-    
-        // Handle respons dari server di sini
-        console.log('Login berhasil:', response.data);
-        // Simpan token ke AsyncStorage
-        const userToken = response.data.token;
-
-        //token login
-        await AsyncStorage.setItem('userToken', userToken);
-
-        //tabel user
-        await AsyncStorage.setItem('akunId', response.data.user.id.toString());
-
-        await AsyncStorage.setItem('userEmail', response.data.user.email);
+            // Kirim permintaan login ke server
+            const response = await Api.post('/login-pelanggan', {
+                email: email,
+                password: password,
+            });
         
-        if (response.data.user.email_verified_at) {
-            await AsyncStorage.setItem('userEmailVerifiedAt', response.data.user.email_verified_at);
-        }
-        await AsyncStorage.setItem('userRole', response.data.user.role);
+            // Handle respons dari server di sini
+            console.log('Login berhasil:', response.data);
+            // Simpan token ke AsyncStorage
+            const userToken = response.data.token;
 
-        await AsyncStorage.setItem('userStatus', response.data.user.status);
+            //token login
+            await AsyncStorage.setItem('userToken', userToken);
 
-        //tabel pelanggan
-        await AsyncStorage.setItem('idPelanggan', response.data.user.pelanggan.id.toString());
+            //tabel user
+            await AsyncStorage.setItem('akunId', response.data.user.id.toString());
 
-        await AsyncStorage.setItem('userNama', response.data.user.pelanggan.nama);
+            await AsyncStorage.setItem('userEmail', response.data.user.email);
+            
+            if (response.data.user.email_verified_at) {
+                await AsyncStorage.setItem('userEmailVerifiedAt', response.data.user.email_verified_at);
+            }
+            await AsyncStorage.setItem('userRole', response.data.user.role);
 
-        await AsyncStorage.setItem('userNoHp', response.data.user.pelanggan.no_hp);
+            await AsyncStorage.setItem('userStatus', response.data.user.status);
 
-        if (response.data.user.pelanggan.foto) {
-            await AsyncStorage.setItem('userFoto', response.data.user.pelanggan.foto);
-        }
+            //tabel pelanggan
+            await AsyncStorage.setItem('idPelanggan', response.data.user.pelanggan.id.toString());
+
+            await AsyncStorage.setItem('userNama', response.data.user.pelanggan.nama);
+
+            await AsyncStorage.setItem('userNoHp', response.data.user.pelanggan.no_hp);
+
+            if (response.data.user.pelanggan.foto) {
+                await AsyncStorage.setItem('userFoto', response.data.user.pelanggan.foto);
+            }
+            
+            const alertType = response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.SUCCESS;
+            Toast.show({
+                type: type,
+                title: response.data.type,
+                textBody: response.data.notifikasi,
+                autoClose: 1500,
+            })    
+
+            navigation.navigate('BottomTabNavigation', { name: 'Home' })
         
-        navigation.navigate('BottomTabNavigation', { name: 'Home' })
         } catch (error) {
+            const alertType = error.response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
+
+            Toast.show({
+                type: type,
+                title: error.response.data.type,
+                textBody: error.response.data.notifikasi,
+                autoClose: 1500,
+            });
             setErrorMessage('Username or password is wrong');
             console.log(error)
         }

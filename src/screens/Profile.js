@@ -6,7 +6,7 @@ import {
   useWindowDimensions,
   FlatList
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -15,6 +15,7 @@ import { SceneMap, TabBar, TabView} from "react-native-tab-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
 import { useIsFocused } from '@react-navigation/native';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */}
 import { COLORS, FONTS, SIZES, images, Storage } from "../constans";
@@ -75,7 +76,12 @@ const renderTabBar = (props) => (
   />
 );
 
-const Profile = () => {
+const Profile = (props) => {
+  const paycheck = {
+    prosesBerhasil: props.route.params?.prosesBerhasil || false,
+    type: props.route.params?.type || '',
+    notifikasi: props.route.params?.notifikasi || '',
+  };
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [Nama, setName] = useState("")
@@ -95,6 +101,20 @@ const Profile = () => {
       fetchData();
     }
   }, [isFocused]); 
+
+  useEffect(() => {
+    if (paycheck?.prosesBerhasil) {
+        const alertType = paycheck.type.toUpperCase();
+        const type = ALERT_TYPE[alertType] || ALERT_TYPE.SUCCESS;
+        Toast.show({
+            type: type,
+            title: paycheck.type,
+            textBody: paycheck.notifikasi,
+            autoClose: 1500,
+        })
+        navigation.setParams({ prosesBerhasil: false });
+    }
+  }, [paycheck?.prosesBerhasil]);
 
   return (
     <SafeAreaView

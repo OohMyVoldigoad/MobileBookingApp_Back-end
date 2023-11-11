@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */}
 import BottomTabNavigation from './src/navigation/BottonTabNavigation'
@@ -49,114 +50,116 @@ if (!fontsLoaded) {
     return null
 }
 return (
-    <SafeAreaProvider onLayout={onLayoutRootView}>
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen
-                    name="Welcome"
-                    component={Welcome}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="OnBoarding"
-                    component={OnBoarding}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="Login"
-                    component={Login}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="SignUp"
-                    component={Signup}
-                    options={{ headerShown: false }}
-                />
-                {/* Your other screens go here */}
-                <Stack.Screen
-                    name="EditProfile"
-                    component={EditProfile}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Settings"
-                    component={Settings}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="EditPassword"
-                    component={EditPassword}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Search"
-                    component={Search}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Notifications"
-                    component={Notifications}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="cabangOlahraga"
-                    component={CabangOlahraga}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Lapangan"
-                    component={Lapangan}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Company"
-                    component={Company}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="ReviewOrder"
-                    component={ReviewOrder}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Methode"
-                    component={MethodePay}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="Detail"
-                    component={Detail}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="BottomTabNavigation"
-                    component={BottomTabNavigation}
-                    options={{ headerShown: false }}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
-    </SafeAreaProvider>
+    <AlertNotificationRoot>
+        <SafeAreaProvider onLayout={onLayoutRootView}>
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen
+                        name="Welcome"
+                        component={Welcome}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="OnBoarding"
+                        component={OnBoarding}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="Login"
+                        component={Login}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="SignUp"
+                        component={Signup}
+                        options={{ headerShown: false }}
+                    />
+                    {/* Your other screens go here */}
+                    <Stack.Screen
+                        name="EditProfile"
+                        component={EditProfile}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Settings"
+                        component={Settings}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="EditPassword"
+                        component={EditPassword}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Search"
+                        component={Search}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Notifications"
+                        component={Notifications}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="cabangOlahraga"
+                        component={CabangOlahraga}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Lapangan"
+                        component={Lapangan}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Company"
+                        component={Company}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="ReviewOrder"
+                        component={ReviewOrder}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Methode"
+                        component={MethodePay}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Detail"
+                        component={Detail}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="BottomTabNavigation"
+                        component={BottomTabNavigation}
+                        options={{ headerShown: false }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </SafeAreaProvider>
+    </AlertNotificationRoot>
     )
 }

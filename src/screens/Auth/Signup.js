@@ -5,6 +5,7 @@ import { COLORS } from '../../constans/index';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */}
 import { Api } from '../../constans/index';
@@ -37,12 +38,27 @@ const Signup = ({ navigation }) => {
         // Handle respons dari server di sini
         console.log(response.data.notifikasi);
 
-        navigation.navigate('Login', { registerSuccess: true });
+        navigation.navigate('Login', { //notifikasi
+            prosesBerhasil:true,
+            notifikasi: response.data.notifikasi,
+            type: response.data.type
+        });
+
         } catch (error) {
             // Jika terjadi kesalahan, tangani pesan kesalahan dari server
             if (error.response && error.response.data && error.response.data.errors) {
                 setErrorMessages(error.response.data.errors);
             }
+
+            const alertType = error.response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
+
+            Toast.show({
+                type: type,
+                title: error.response.data.type,
+                textBody: error.response.data.notifikasi,
+                autoClose: 1500,
+            });
     
             console.error('Register gagal:', error);
         }
@@ -543,7 +559,7 @@ const Signup = ({ navigation }) => {
                     justifyContent: "center",
                     marginVertical: 22
                 }}>
-                    <Text style={{ fontSize: 16, color: COLORS.black }}>Already have an account</Text>
+                    <Text style={{ fontSize: 16, color: COLORS.black }}>Already have an account?</Text>
                     <Pressable
                         onPress={() => navigation.navigate("Login")}
                     >

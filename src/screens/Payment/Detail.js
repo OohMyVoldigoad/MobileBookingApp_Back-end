@@ -5,7 +5,8 @@ import {
     TouchableOpacity,
     ScrollView,
     StyleSheet,
-    Modal
+    Modal,
+    Button
 } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import React, { useState, useEffect } from "react";
@@ -15,6 +16,7 @@ import * as ImagePicker from "expo-image-picker";
 import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */} 
 import { FONTS, COLORS, images, Api, Storage } from "../../constans";
@@ -24,8 +26,8 @@ const ios = Platform.OS == 'ios';
 const topMargin = ios? '': 'mt-10';
 
 const Detail = (props) => {
-    const { title, Nomor, image, price, status, inibenar, tanggal } = props.route.params;
-    const paycheck = { title, Nomor, image, price, status, inibenar, tanggal };
+    const { title, Nomor, image, price, status, inibenar, tanggal, prosesBerhasil, type, notifikasi } = props.route.params;
+    const paycheck = { title, Nomor, image, price, status, inibenar, tanggal, prosesBerhasil, type, notifikasi };
     const navigation = useNavigation();
 
     const [minutes, setMinutes] = useState(15);
@@ -51,52 +53,6 @@ const Detail = (props) => {
 
     const handleOnPressStartDate = () => {
         setOpenStartDatePicker(!openStartDatePicker);
-    };
-
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const openModal = () => {
-        setIsModalVisible(true);
-    };
-    const closeModal = () => {
-        setIsModalVisible(false);
-    };
-    function Success() {
-        return (
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={isModalVisible}
-            >
-                <View
-                style={{
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-                >
-                <View
-                    style={{ margin: 20, backgroundColor: COLORS.primary, alignItems: "center", justifyContent: "center", borderRadius: 20, padding: 35, width: "90%", shadowColor: "#000",
-                    shadowOffset: {
-                        width: 0,
-                        height: 2,
-                    },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 4,
-                    elevation: 5,
-                    }}
-                >
-                    <LottieView style={{ width: 100, height: 100 }} source={require('../../../assets/imp/success.json')} autoPlay loop/>
-                    <Text style={{ fontSize: wp(4), marginVertical: 15 }} className="font-bold text-neutral-700">
-                        Upload bukti pembayaran berhasil 
-                    </Text>
-
-                    <TouchableOpacity style={{ backgroundColor: COLORS.white, width: wp(20), height: wp(10), justifyContent: "center", alignItems: "center", borderRadius: 10 }} onPress={closeModal}>
-                        <Text style={{ ...FONTS.body2, color: COLORS.black}}>Close</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            </Modal>
-        );
     };
 
     function renderDatePicker() {
@@ -170,9 +126,6 @@ const Detail = (props) => {
             setSeconds(59);
         } else if (minutes === 0 && seconds === 0) {
             // Waktu habis, lakukan aksi berikut
-            // Update status pembayaran
-            updatePaymentStatus();
-            
             // Navigasi ke halaman 'Methode'
             navigation.goBack();
         }
@@ -180,9 +133,19 @@ const Detail = (props) => {
         return () => clearInterval(interval);
     }, [minutes, seconds]);
     
-    const updatePaymentStatus = () => {
-        // Logic untuk mengupdate status pembayaran menjadi "dibatalkan"
-    };
+    useEffect(() => {
+        if (paycheck?.prosesBerhasil) {
+            const alertType = paycheck.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.SUCCESS;
+            Toast.show({
+                type: type,
+                title: paycheck.type,
+                textBody: paycheck.notifikasi,
+                autoClose: 1500,
+            })
+            navigation.setParams({ prosesBerhasil: false });    
+        }
+    }, [paycheck?.prosesBerhasil]);
     
     const [selectedImage, setSelectedImage] = useState("Upload bukti pembayaran");
     const [selectedImageName, setSelectedImageName] = useState("Upload bukti pembayaran");
@@ -227,8 +190,22 @@ const Detail = (props) => {
                 },
             });
             console.log(response.data.notifikasi);
-            navigation.navigate('Riwayat');
+            navigation.navigate('Riwayat',{
+                //notifikasi
+                prosesBerhasil:true,
+                notifikasi: response.data.notifikasi,
+                type: response.data.type
+            });
         } catch (error) {
+            const alertType = error.response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
+
+            Toast.show({
+                type: type,
+                title: error.response.data.type,
+                textBody: error.response.data.notifikasi,
+                autoClose: 1500,
+            });
             console.error('Gagal:', error);
         }
     };    
@@ -268,7 +245,6 @@ const Detail = (props) => {
                     </Text>
                     <Text>{`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}</Text>
                 </View>
-                {Success()}
                 <View className="bg-[#BCD8A6] rounded-3xl items-center">
                     <View style={{ borderBottomWidth: 2 }} className="flex-wrap items-center ml-2 p-1">
                         <Image source={{ uri: Storage.Storage + paycheck.image }} style={{ width: wp(70), height: hp(30), borderRadius: 10, marginTop: 10}} />

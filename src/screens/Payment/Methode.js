@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeftIcon} from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */} 
 import { COLORS, images, Ddigital, TransferBank, Api, Storage } from "../../constans";
@@ -70,9 +71,23 @@ const MethodePay = (props) => {
                 image: image,
                 status: "Menunggu Pembayaran",
                 inibenar,
-                tanggal
+                tanggal,
+                //notifikasi
+                prosesBerhasil:true,
+                notifikasi: response.data.notifikasi,
+                type: response.data.type
             });
         } catch (error) {
+            const alertType = error.response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
+
+            Toast.show({
+                type: type,
+                title: error.response.data.type,
+                textBody: error.response.data.notifikasi,
+                autoClose: 1500,
+            });
+            
             console.error('Gagal:', error);
         }
     };

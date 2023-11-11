@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommonActions } from "@react-navigation/native";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 {/* dev */}
 import { COLORS, FONTS, API, Api } from "../../constans";
@@ -72,11 +73,29 @@ const Settings = ({ navigation }) => {
 
             navigation.dispatch(resetAction);
 
+            const alertType = response.data.type.toUpperCase();
+            const type = ALERT_TYPE[alertType] || ALERT_TYPE.SUCCESS;
+            Toast.show({
+                type: type,
+                title: response.data.type,
+                textBody: response.data.notifikasi,
+                autoClose: 1500,
+            })    
+
             return console.log(response.data);
           }
 
         throw new Error('Token not found');
     } catch (error) {
+        const alertType = error.response.data.type.toUpperCase();
+        const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
+
+        Toast.show({
+            type: type,
+            title: error.response.data.type,
+            textBody: error.response.data.notifikasi,
+            autoClose: 1500,
+        });
         console.error(error);
     }
   };
