@@ -35,10 +35,17 @@ const Home = () => {
   useEffect(() => {
       const fetchData = async () => {
           try {
-              const response = await Api.get('/home');
-              setCompany(response.data.dataPenyediaLapangan);
-              setLapangan(response.data.dataLapangan);
-              setName(await AsyncStorage.getItem('userNama'))
+              const token = await AsyncStorage.getItem('userToken');
+              if (token){
+                const response = await Api.get('/home', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setCompany(response.data.dataPenyediaLapangan);
+                setLapangan(response.data.dataLapangan);
+                setName(await AsyncStorage.getItem('userNama'))
+              }
           } catch (error) {
               console.error("Terjadi kesalahan saat mengambil data:", error);
           }

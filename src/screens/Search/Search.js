@@ -26,8 +26,8 @@ const Search = () => {
                 >
                 <TouchableOpacity
                     onPress={()=> navigation.goBack()}
-                    className="p-2 rounded-full ml-4"
-                    style={{backgroundColor: 'black'}}
+                    className="flex p-2 rounded-full ml-4 mb-4"
+                    style={{backgroundColor: 'rgba(255,255,255,0.5)'}}
                 >
                     <ChevronLeftIcon size={wp(7)} strokeWidth={4} color="white" />
                 </TouchableOpacity>

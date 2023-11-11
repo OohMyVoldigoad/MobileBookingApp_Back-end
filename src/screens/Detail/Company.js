@@ -11,6 +11,7 @@ import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import MapView from 'react-native-maps';
 import axios from 'axios';
 import RenderHtml from 'react-native-render-html';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */}
 import { COLORS,FONTS } from '../../constans';
@@ -42,10 +43,17 @@ export default function Company(props) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await Api.get('/penyedia_lapangan/'+ item.id +'/jenisLapangan');
-                setJenisL(response.data.dataJenisLapangan);
-                setLapangan(response.data.dataLapangan)
-                setMinHarga(response.data.minHarga)
+                const token = await AsyncStorage.getItem('userToken');
+                if(token){
+                    const response = await Api.get('/penyedia_lapangan/'+ item.id +'/jenisLapangan',{
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setJenisL(response.data.dataJenisLapangan);
+                    setLapangan(response.data.dataLapangan)
+                    setMinHarga(response.data.minHarga)
+                }
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengambil data:", error);
             }
@@ -71,7 +79,7 @@ return (
         <View style={styles.modalContent}>
 
             <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Modal title</Text>
+                <Text style={styles.modalTitle}>Lapangan</Text>
                 <TouchableOpacity onPress={closeModal}>
                     <Text style={styles.closeButton}>Close</Text>
                 </TouchableOpacity>

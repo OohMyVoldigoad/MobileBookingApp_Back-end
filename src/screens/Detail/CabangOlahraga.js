@@ -7,6 +7,7 @@ import { MagnifyingGlassIcon } from 'react-native-heroicons/outline'
 import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { LinearGradient } from 'expo-linear-gradient'
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */}
 import { COLORS, Storage, Api } from '../../constans';
@@ -22,10 +23,17 @@ const [Lapangan, setLapangan] = useState([])
 useEffect(() => {
     const fetchData = async () => {
         try {
+            const token = await AsyncStorage.getItem('userToken');
             const jenis = item?.title
-            const response = await Api.get('/lapangan/jenis/' + jenis);
-            setLapangan(response.data.dataLapangan);
-            console.log(response.data.notifikasi)
+            if (token){
+                const response = await Api.get('/lapangan/jenis/' + jenis, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setLapangan(response.data.dataLapangan);
+                console.log(response.data.notifikasi)
+            }
         } catch (error) {
             console.error("Terjadi kesalahan saat mengambil data:", error);
         }

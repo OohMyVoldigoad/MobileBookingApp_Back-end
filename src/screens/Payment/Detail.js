@@ -17,6 +17,7 @@ import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */} 
 import { FONTS, COLORS, images, Api, Storage } from "../../constans";
@@ -184,22 +185,27 @@ const Detail = (props) => {
         });
     
         try {
-            const response = await Api.post('pembayaran/proses', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            console.log(response.data.notifikasi);
-            navigation.navigate('Riwayat',{
-                //notifikasi
-                prosesBerhasil:true,
-                notifikasi: response.data.notifikasi,
-                type: response.data.type
-            });
+            const token = await AsyncStorage.getItem('userToken');
+            if(token){
+                const response = await Api.post('/pembayaran/proses', formData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    },
+                });
+                console.log(response.data?.notifikasi);
+                navigation.navigate('Riwayat',{
+                    //notifikasi
+                    prosesBerhasil:true,
+                    notifikasi: response.data.notifikasi,
+                    type: response.data.type
+                });
+            }
+            throw new Error('Token not found');
         } catch (error) {
             const alertType = error.response.data.type.toUpperCase();
             const type = ALERT_TYPE[alertType] || ALERT_TYPE.ERROR; // Default ke ERROR jika tidak ditemukan
-
+            
             Toast.show({
                 type: type,
                 title: error.response.data.type,

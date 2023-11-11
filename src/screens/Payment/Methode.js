@@ -32,7 +32,12 @@ const MethodePay = (props) => {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await Api.get('/metode-pembayaran');
+                const token = await AsyncStorage.getItem('userToken');
+                const response = await Api.get('/metode-pembayaran',{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setUserID(await AsyncStorage.getItem('idPelanggan'))
                 setMetodeDigital(response.data.dataDigital);
                 setMetodeBank(response.data.dataBank);
@@ -50,17 +55,19 @@ const MethodePay = (props) => {
     {/* API */}
     const pemesananHandler = async (title,nomor,image,id_metode) => {
         try {
-            const response = await Api.post('/pemesanan/'+Id+'/proses', {
-                id_lapangan: select.map((item)=>{
-                    return item.id_lapangan
-                }),
-                id_jadwal_lapangan: select.map((item)=>{
-                    return item.id
-                }),
-                id_metode_pembayaran : id_metode,
+            const token = await AsyncStorage.getItem('userToken');
+            const response = await Api.post('/pemesanan/'+ Id +'/proses', {
+                id_lapangan: select.map((item) => item.id_lapangan),
+                id_jadwal_lapangan: select.map((item) => item.id),
+                id_metode_pembayaran: id_metode,
                 tanggal_pemesanan: tanggal,
                 total_harga: total
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
+            
             var inibenar = response.data.dataPemesanan
             console.log(response.data.notifikasi);
             navigation.navigate('Detail', {

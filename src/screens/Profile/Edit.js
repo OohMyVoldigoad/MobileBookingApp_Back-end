@@ -59,9 +59,11 @@ const editProfile = async () => {
   }
 
   try {
+    const token = await AsyncStorage.getItem('userToken');
       // Kirim permintaan login ke server
     const response = await Api.post('/pelanggan/profile/'+ id, formData, {
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
     },
   });

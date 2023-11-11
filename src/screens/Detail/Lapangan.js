@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { ChevronLeftIcon, ShoppingCartIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 {/* dev */} 
 import { COLORS, FONTS, Api, Storage } from "../../constans";
@@ -107,8 +108,15 @@ const Lapangan = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await Api.get('/lapangan/'+home.id+'/jadwal');
-                setJadwalLapangan(response.data.dataJadwalLapangan);
+                const token = await AsyncStorage.getItem('userToken');
+                if(token){
+                    const response = await Api.get('/lapangan/'+home.id+'/jadwal',{
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setJadwalLapangan(response.data.dataJadwalLapangan);
+                }
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengambil data:", error);
             }

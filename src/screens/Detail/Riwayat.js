@@ -185,17 +185,16 @@ const Riwayat = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const token = await AsyncStorage.getItem('userToken');
                 const fetchedIdPelanggan = await AsyncStorage.getItem('idPelanggan');
-                if (fetchedIdPelanggan) {
-                    const response = await Api.get('/pemesanan/'+ fetchedIdPelanggan +'/riwayat/'+ activeSort);
-    
-                    // Cek kode status
-                    if (response.status === 200) {
-                        setDataDraft(response.data.dataDraft);
-                        console.log(response.data.notifikasi);
-                    } else {
-                        console.error("API mengembalikan status:", response.status);
-                    }
+                if (token) {
+                    const response = await Api.get('/pemesanan/'+ fetchedIdPelanggan +'/riwayat/'+ activeSort, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setDataDraft(response.data.dataDraft);
+                    console.log(response.data.notifikasi);
                 }
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengambil data:", error);
@@ -219,8 +218,10 @@ const Riwayat = (props) => {
         });
     
         try {
+            const token = await AsyncStorage.getItem('userToken');
             const response = await Api.post('pembayaran/proses', formData, {
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 },
             });
