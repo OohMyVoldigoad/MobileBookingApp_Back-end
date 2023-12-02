@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const Api = axios.create({
-    baseURL: 'http://192.168.43.243:8000/api',
+    baseURL: 'https://sportscamp.my.id/api',
 });
 
 export default Api;

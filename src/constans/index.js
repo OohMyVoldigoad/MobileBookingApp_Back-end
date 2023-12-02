@@ -9,7 +9,7 @@ export const imagesDataURL = [
 ]
 
 export const Storage = {
-    Storage : 'http://192.168.43.243:8000/storage/'
+    Storage : 'https://sportscamp.my.id/storage/'
 }
 
 export const cabangOlahraga = [
